@@ -1,22 +1,43 @@
-import sys
+class LinkedList:
+    class Node:
+        def __init__(self, k=None, next=None):
+            self.k, self.next = k, next
 
-def lis(a):
-    q = [0] * len(a)
-    for i in range(len(a)):
-        m = 0
-        for j in range(i):
-            if a[j] < a[i] and m < q[j]:
-                m = q[j]
-        q[i] = m + 1
-    length, seq, m = max(q), [], sys.maxsize
-    for i, s in enumerate(q[::-1]):
-        current = a[-1 - i]
-        if s == length and m > current:
-            seq.append(current)
-            m, length = current, length - 1
-    return seq[::-1]
+        def __str__(self):
+            return str(self.k)
+
+    def __init__(self):
+        self.head = LinkedList.Node()
+
+    def add(self, k):
+        next = self.head.next
+        new_node = LinkedList.Node(k, next)
+        self.head.next = new_node
+
+    def reverse(self):
+        node, next = self.head, self.head.next
+        while next:
+            next_next = next.next
+            next.next = node
+            node = next
+            next = next_next
+        head = self.head
+        if head.next:
+            head.next.next = None
+            head.next = node
+
+    def __str__(self):
+        entries, node = "", self.head.next
+        if node:
+            while node:
+                entries += node.k + " "
+                node = node.next
+        return entries
 
 
-A = [4, 10, 1, 2, 0, 9, -1]
-assert lis(A) == [1, 2, 9]
-print(lis([0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15]))
+linked_list = LinkedList()
+linked_list.add("Igor")
+linked_list.add("Vasil")
+print(linked_list)
+linked_list.reverse()
+print(linked_list)
