@@ -7,5 +7,28 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/soft/java_libs/testing" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$USER_HOME$/soft/java_libs/testing" recursive="false" />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$USER_HOME$/soft/java_libs/others" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$USER_HOME$/soft/java_libs/others" />
+        </SOURCES>
+        <jarDirectory url="file://$USER_HOME$/soft/java_libs/others" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/soft/java_libs/others" recursive="false" type="SOURCES" />
+      </library>
+    </orderEntry>
   </component>
 </module>
