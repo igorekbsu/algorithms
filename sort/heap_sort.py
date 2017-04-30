@@ -1,4 +1,4 @@
-import data
+from common import data
 
 class Heap:
     def __init__(self, A):

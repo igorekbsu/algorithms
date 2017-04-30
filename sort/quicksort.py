@@ -1,5 +1,3 @@
-import data
-
 def quicksort(A, p, r):
     work = [(p, r)]
     while work:
@@ -22,4 +20,3 @@ def partition(A, p, r):
 A = data.A2
 quicksort(A, 0, len(A) - 1)
 print(A)
-  

@@ -37,4 +37,3 @@ lcs('ACCGGTCGAGTGCGCGGAAGCCGGCCGAA', 'GTCGTTCGGAATGCCGTTGCTCTGTAAA')
 
 seq = "character"
 print(lcs(seq, seq[::-1]))
-

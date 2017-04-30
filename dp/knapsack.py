@@ -17,4 +17,3 @@ def maximize(values, W):
 
 
 print(maximize(values, W), counter)
-  
