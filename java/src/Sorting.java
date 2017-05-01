@@ -6,6 +6,7 @@ public class Sorting {
         out(insertion(cp(a)));
         out(selection(cp(a)));
         out(mergeSort(cp(a), 0, a.length - 1));
+        out(rInsertion(cp(a), a.length));
         out(a);
     }
 
@@ -28,13 +29,8 @@ public class Sorting {
         right[right.length - 1] = Integer.MAX_VALUE;
         int n1 = 0, n2 = 0;
         for (int n = i; n <= j; n++)
-            if (left[n1] < right[n2]) {
-                a[n] = left[n1];
-                n1++;
-            } else {
-                a[n] = right[n2];
-                n2++;
-            }
+            if (left[n1] < right[n2]) a[n] = left[n1++];
+            else a[n] = right[n2++];
     }
 
     static int[] insertion(int[] a) {
@@ -57,6 +53,23 @@ public class Sorting {
             a[i] = b;
         }
         return a;
+    }
+
+    static int[] rInsertion(int[] a, int n) {
+        if (n > 1) {
+            rInsertion(a, n - 1);
+            insert(a, n - 1);
+        }
+        return a;
+    }
+
+    static void insert(int[] a, int n) {
+        if (a[n] < a[n - 1]) {
+            int b = a[n], i = n - 1;
+            for (; i >= 0 && a[i] > b; i--)
+                a[i + 1] = a[i];
+            a[i + 1] = b;
+        }
     }
 
     static void out(int[] a) {System.out.println(Arrays.toString(a));}
