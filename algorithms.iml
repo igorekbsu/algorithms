@@ -12,5 +12,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Python 3.5.1 (~/.pyenv/versions/3.5.1/bin/python3.5) interpreter library" level="application" />
   </component>
 </module>
