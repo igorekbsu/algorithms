@@ -1,11 +1,28 @@
 package linked_list;
+import java.util.*;
+
 public class Solution {
     public static void main(String[] args) {
-        Node head = new Node(null, 5);
-        head = new Node(head, 3);
-        head = new Node(head, 1);
-        print(head);
-        print(reverse(head));
+        Node five = new Node(null, 5);
+        Node three = new Node(five, 3);
+        Node one = new Node(three, 1);
+        print(one);
+        Node two = new Node(three, 2);
+        print(two);
+        System.out.println(FindMergeNode(one, two));
+    }
+
+    static int FindMergeNode(Node a, Node b) {
+        Set<Node> aNodes = new HashSet<>();
+        while (a != null) {
+            aNodes.add(a);
+            a = a.next;
+        }
+        while (b != null) {
+            if (aNodes.contains(b)) return b.data;
+            b = b.next;
+        }
+        return 0;
     }
 
     static void print(Node n) {
