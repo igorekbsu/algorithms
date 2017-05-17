@@ -5,7 +5,7 @@ import java.util.*;
 public class Solution {
     public static void main(String[] args) throws FileNotFoundException {
         //Scanner in = new Scanner(System.in);
-        Scanner in = new Scanner(new FileInputStream("hr/src/in1"));
+        Scanner in = new Scanner(new FileInputStream("hr/src/in"));
         int n = in.nextInt();
         int m = in.nextInt();
         Map<Integer, Set<Integer>> route = new HashMap<>();
