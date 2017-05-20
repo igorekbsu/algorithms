@@ -1,2 +1,8 @@
-9 0 2
-1 3 4 7
+limit buy 10 99.00
+limit buy 15 100.00
+limit buy 3 100.50
+limit sell 5 100.00
+limit buy 5 99.50
+stop sell 3 99.49
+cancel na 2 0.00
+market sell 6 0.00
