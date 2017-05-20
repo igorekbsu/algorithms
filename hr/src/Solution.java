@@ -1,151 +1,146 @@
-import java.io.*;
 import java.util.*;
 
 public class Solution {
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        //Scanner in = new Scanner(new FileInputStream("hr/src/in"));
         OrderBook book = new OrderBook();
-        int id = 1;
+        long id = 1;
         while (in.hasNext()) {
             String str = in.nextLine();
             String[] s = str.split(" ");
-            Order order = new Order(id++, s[0], s[1], Integer.parseInt(s[2]), Double.parseDouble(s[3]));
-            book.process(order);
+            book.process(id++, s[0], s[1], Long.parseLong(s[2]), Double.parseDouble(s[3]));
         }
     }
 
     static class OrderBook {
-        final Map<Integer, Order> allOrders = new HashMap<>();
-        final Map<Side, SortedSet<Order>> limitOrders = new HashMap<>();
-        final SortedSet<Order> stopOrders = new TreeSet<>();
+        static final Map<String, String> opposingSides = new HashMap<>();
+        static final Map<String, ExecutionStrategy> executionStrategies = new HashMap<>();
+        static final Map<String, CancelStrategy> cancelStrategies = new HashMap<>();
+        static final Map<String, TriggerStrategy> triggers = new HashMap<>();
+        final Map<Long, Order> allOrders = new HashMap<>();
+        final Map<String, SortedSet<Order>> outstandingOrders = new HashMap<>();
+        final List<Order> stopOrders = new ArrayList<>();
 
-        public OrderBook() {
-            limitOrders.put(Side.buy, new TreeSet<>((o1, o2) -> {
-                int compare = Double.compare(o2.value2, o1.value2);
-                if (compare == 0) compare = o1.compareTo(o2);
-                return compare;
-            }));
-            limitOrders.put(Side.sell, new TreeSet<>((o1, o2) -> {
-                int compare = Double.compare(o1.value2, o2.value2);
-                if (compare == 0) compare = o1.compareTo(o2);
-                return compare;
-            }));
+        OrderBook() {
+            opposingSides.put("buy", "sell");
+            opposingSides.put("sell", "buy");
+            executionStrategies.put("buy", new Buy());
+            executionStrategies.put("sell", new Sell());
+            cancelStrategies.put("limit", (order, book) -> book.outstandingOrders.get(order.side).remove(order));
+            cancelStrategies.put("stop", (order, book) -> stopOrders.remove(order));
+            triggers.put("sell", (order, prices) -> order.price >= prices.first());
+            triggers.put("buy", (order, prices) -> order.price <= prices.last());
+            outstandingOrders.put("buy", new TreeSet<>());
+            outstandingOrders.put("sell", new TreeSet<>());
         }
 
         SortedSet<Double> execute(Order order) {
-            SortedSet<Order> orders = limitOrders.get(order.side.opposing());
             SortedSet<Double> executionPrices = new TreeSet<>();
-            while (!orders.isEmpty()) {
-                Order maker = orders.first();
-                if (order.type == OrderType.limit && !order.side.canExecute(order.value2, maker.value2)) break;
-                int volume = Math.min(order.value1, maker.value1);
-                print(order, maker, volume, maker.value2);
-                executionPrices.add(maker.value2);
-                maker.value1 -= volume;
-                if (maker.value1 == 0) {
+            SortedSet<Order> opposingOrders = outstandingOrders.get(opposingSides.get(order.side));
+            ExecutionStrategy executionStrategy = executionStrategies.get(order.side);
+            while (!opposingOrders.isEmpty()) {
+                Order maker = executionStrategy.maker(opposingOrders);
+                if (!executionStrategy.canExecute(order, maker.price)) break;
+                long volume = Math.min(order.size, maker.size);
+                print(order, maker, volume, maker.price);
+                executionPrices.add(maker.price);
+                maker.size -= volume;
+                order.size -= volume;
+                if (maker.size == 0) {
+                    opposingOrders.remove(maker);
                     allOrders.remove(maker.id);
-                    orders.remove(maker);
                 }
-                order.value1 -= volume;
-                if (order.value1 == 0) break;
-            }
-            if (order.type == OrderType.limit && order.value1 > 0) {
-                limitOrders.get(order.side).add(order);
-                allOrders.put(order.id, order);
+                if (order.size == 0) break;
             }
             return executionPrices;
         }
 
-        void print(Order taker, Order maker, int volume, double price) {
-            System.out.println(String.format("match %s %s %s %.2f", taker.id, maker.id, volume, price));
-        }
-
-        public void process(Order order) {
-            if (order.type == OrderType.cancel) {
-                Order existing = allOrders.get(order.value1);
-                if (existing != null) {
-                    allOrders.remove(existing.id);
-                    if (existing.type == OrderType.limit)
-                        limitOrders.get(existing.side).remove(existing);
-                    else if (existing.type == OrderType.stop)
-                        stopOrders.remove(existing);
+        void process(long orderId, String type, String side, long v1, double v2) {
+            if (type.equals("cancel")) {
+                Order order = allOrders.get(v1);
+                if (order != null) {
+                    CancelStrategy cancelStrategy = cancelStrategies.get(order.type);
+                    cancelStrategy.cancel(order, this);
+                    allOrders.remove(v1);
                 }
-            } else if (order.type == OrderType.stop) {
-                allOrders.put(order.id, order);
-                stopOrders.add(order);
+            } else if (type.equals("stop")) {
+                stopOrders.add(new Order(orderId, type, side, v1, v2));
             } else {
+                Order order = new Order(orderId, type, side, v1, v2);
                 SortedSet<Double> executionPrices = execute(order);
-                if (order.value1 <= 0) {
-                    limitOrders.get(order.side).remove(order);
-                    allOrders.remove(order.id);
-                }
                 if (!executionPrices.isEmpty()) {
-                    for (Iterator<Order> it = stopOrders.iterator(); it.hasNext(); ) {
-                        Order stopOrder = it.next();
-                        if ((stopOrder.side == Side.sell && executionPrices.first() <= stopOrder.value2) || (stopOrder.side == Side.buy && executionPrices.last() >= stopOrder.value2)) {
-                            execute(stopOrder);
+                    for (int i = 0; i < stopOrders.size(); i++) {
+                        Order stopOrder = stopOrders.get(i);
+                        if (triggers.get(stopOrder.side).triggered(stopOrder, executionPrices)) {
+                            executionPrices.addAll(execute(stopOrder));
                             allOrders.remove(stopOrder.id);
-                            it.remove();
+                            stopOrders.remove(i);
+                            i = -1;
                         }
                     }
                 }
+                if (order.type.equals("limit") && order.size > 0) {//book unfilled limit order for subsequent executions
+                    outstandingOrders.get(order.side).add(order);
+                    allOrders.put(order.id, order);
+                }
             }
         }
-    }
 
-    enum OrderType {limit, stop, cancel, market}
-
-    enum Side {
-        buy {
-            @Override boolean canExecute(double orderPrice, double price) { return orderPrice >= price; }
-
-            @Override Side opposing() { return sell; }
-        },
-        sell {
-            @Override boolean canExecute(double orderPrice, double price) { return orderPrice <= price; }
-
-            @Override Side opposing() { return buy; }
-        };
-
-        static Side of(String s) {
-            if (s.equals("buy")) return buy;
-            if (s.equals("sell")) return sell;
-            return null;
+        void print(Order taker, Order maker, long volume, double price) {
+            System.out.println(String.format("match %s %s %s %.2f", taker.id, maker.id, volume, price));
         }
-
-        boolean canExecute(double orderPrice, double price) {return false;}
-
-        Side opposing() {return null;}
     }
 
     static class Order implements Comparable<Order> {
-        final int id;
-        final OrderType type;
-        final Side side;
-        int value1;
-        double value2;
+        final long id;
+        final String side, type;
+        long size;
+        double price;
 
-        Order(int id, String type, String side, int value1, double value2) {
+        Order(long id, String type, String side, long size, double price) {
             this.id = id;
-            this.type = OrderType.valueOf(type);
-            this.side = Side.of(side);
-            this.value1 = value1;
-            this.value2 = value2;
+            this.type = type;
+            this.side = side;
+            this.size = size;
+            this.price = price;
         }
 
-        @Override public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("Order");
-            sb.append("{id=").append(id);
-            sb.append(", type=").append(type);
-            sb.append(", side=").append(side);
-            sb.append(", value1=").append(value1);
-            sb.append(", value2=").append(value2);
-            sb.append('}');
-            return sb.toString();
+        @Override public int compareTo(Order o) {
+            int compare = Double.compare(price, o.price);
+            if (compare == 0) compare = Long.compare(id, o.id);
+            return compare;
         }
+    }
 
-        @Override public int compareTo(Order o) { return Integer.compare(id, o.id); }
+    interface ExecutionStrategy {
+        Order maker(SortedSet<Order> opposingOrders);
+
+        boolean canExecute(Order order, double price);
+    }
+
+    @FunctionalInterface interface CancelStrategy {
+        void cancel(Order order, OrderBook book);
+    }
+
+    @FunctionalInterface interface TriggerStrategy {
+        boolean triggered(Order order, SortedSet<Double> prices);
+    }
+
+    static class Buy implements ExecutionStrategy {
+        @Override public Order maker(SortedSet<Order> opposingOrders) { return opposingOrders.first(); }
+
+        @Override public boolean canExecute(Order order, double price) {
+            if (order.type.equals("limit")) return order.price >= price;
+            return true;
+        }
+    }
+
+    static class Sell implements ExecutionStrategy {
+        @Override public Order maker(SortedSet<Order> opposingOrders) { return opposingOrders.last(); }
+
+        @Override public boolean canExecute(Order order, double price) {
+            if (order.type.equals("limit")) return order.price <= price;
+            return true;
+        }
     }
 }
