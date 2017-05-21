@@ -1,148 +1,152 @@
 package order_book;
-import java.io.*;
 import java.util.*;
 
+/**
+ * Notes:
+ * - Code is formatted with 200 right margin, better viewed on the wider screen
+ * - Stop orders execution could probably be done more efficiently at the cost of simplicity. Since all test cases are passing pretty quickly,
+ * and with no additional requirements, simplicity is chosen over more complex but perhaps more efficient approach
+ */
 public class Solution {
-    public static void main(String[] args) throws FileNotFoundException {
-        //Scanner in = new Scanner(System.in);
-        Scanner in = new Scanner(new FileInputStream("hr/src/in"));
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
         OrderBook book = new OrderBook();
         long id = 1;
         while (in.hasNext()) {
-            String str = in.nextLine();
-            String[] s = str.split(" ");
-            Order order = new Order(id++, s[0], s[1], Long.parseLong(s[2]), Double.parseDouble(s[3]));
-            book.process(order);
+            String[] s = in.nextLine().split(" ");
+            book.process(id++, s[0], s[1], Long.parseLong(s[2]), Double.parseDouble(s[3]));
         }
+        in.close();
     }
 
     static class OrderBook {
+        static final Map<String, String> opposingSides = newHashMap("buy", "sell", "sell", "buy");
+        static final Map<String, MatchingStrategy> matchingStrategies = newHashMap(
+                "buy", (buyOrder, sellOrder) -> {
+                    if (buyOrder.isLimit() && buyOrder.price < sellOrder.price) return false;
+                    return true;
+                },
+                "sell", (sellOrder, buyOrder) -> {
+                    if (sellOrder.isLimit() && buyOrder.price < sellOrder.price) return false;
+                    return true;
+                });
+        /**Since limit and stop orders are kept separately, they are cancelled differently. Market orders are not stored (they executed immediately)*/
+        static final Map<String, CancelStrategy> cancelStrategies = newHashMap(
+                "limit", (order, book) -> book.limitOrders.get(order.side).remove(order),
+                "stop", (order, book) -> book.stopOrders.remove(order));
+        static final Map<String, TriggerStrategy> triggers = newHashMap(
+                "buy", (threshold, prices) -> prices.last() >= threshold,//a buy-side stop order triggers if the largest price is at or above the threshold
+                "sell", (threshold, prices) -> prices.first() <= threshold);//a sell-side stop order triggers if the smallest price is at or below the threshold
         final Map<Long, Order> allOrders = new HashMap<>();
-        final Map<Side, SortedSet<Order>> orders = new HashMap<>();
-        final List<Order> stopOrders = new ArrayList<>();
+        /**Keep 'buy' and 'sell' limit orders separately sorted by price (highest first for buy, lowest first for sell), and then id (oldest first)*/
+        final Map<String, SortedSet<Order>> limitOrders = newHashMap(
+                "buy", new TreeSet<>((Comparator<Order>) (o1, o2) -> {
+                    int compare = Double.compare(o2.price, o1.price);
+                    if (compare == 0) compare = Long.compare(o1.id, o2.id);
+                    return compare;
+                }),
+                "sell", new TreeSet<>((Comparator<Order>) (o1, o2) -> {
+                    int compare = Double.compare(o1.price, o2.price);
+                    if (compare == 0) compare = Long.compare(o1.id, o2.id);
+                    return compare;
+                }));
+        /**Stop orders need to be removed quickly and iterated in order of insertion, hence linked hash set is used*/
+        final LinkedHashSet<Order> stopOrders = new LinkedHashSet<>();
 
-        public OrderBook() {
-            orders.put(Side.buy, new TreeSet<>((o1, o2) -> {
-                int compare = Double.compare(o2.value2, o1.value2);
-                if (compare == 0) compare = Double.compare(o1.id, o2.id);
-                return compare;
-            }));
-            orders.put(Side.sell, new TreeSet<>((o1, o2) -> {
-                int compare = Double.compare(o1.value2, o2.value2);
-                if (compare == 0) compare = Double.compare(o1.id, o2.id);
-                return compare;
-            }));
-        }
-
+        /**If execution happens, the prices are recorded and returned. Prices are sorted (lowest first). Empty set is returned if there was no execution*/
         SortedSet<Double> execute(Order order) {
             SortedSet<Double> executionPrices = new TreeSet<>();
-            SortedSet<Order> opposingOrders = this.orders.get(order.side.opposing());
+            SortedSet<Order> opposingOrders = limitOrders.get(opposingSides.get(order.side));
+            MatchingStrategy matchingStrategy = matchingStrategies.get(order.side);
             while (!opposingOrders.isEmpty()) {
-                Order maker = opposingOrders.first();
-                if (order.type == OrderType.limit && !order.side.canExecute(order.value2, maker.value2)) break;
-                long volume = Math.min(order.value1, maker.value1);
-                print(order, maker, volume, maker.value2);
-                executionPrices.add(maker.value2);
-                maker.value1 -= volume;
-                if (maker.value1 == 0) {
-                    allOrders.remove(maker.id);
+                Order maker = opposingOrders.first();//best match for either buy or sell
+                if (!matchingStrategy.matches(order, maker)) break;//if order can not be matched with the best opposing order, no need to check others
+                long volume = Math.min(order.size, maker.size);
+                print(order, maker, volume, maker.price);
+                executionPrices.add(maker.price);
+                maker.size -= volume;
+                order.size -= volume;
+                if (maker.size == 0) {//remove maker if it was filled entirely
                     opposingOrders.remove(maker);
+                    allOrders.remove(maker.id);
                 }
-                order.value1 -= volume;
-                if (order.value1 == 0) break;
-            }
-            if (order.type == OrderType.limit && order.value1 > 0) {
-                this.orders.get(order.side).add(order);
-                allOrders.put(order.id, order);
+                if (order.size == 0) break;//order is filled entirely, quit
             }
             return executionPrices;
+        }
+
+        void process(long orderId, String type, String side, long v1, double v2) {
+            if (type.equals("cancel")) {
+                long cancelOrderId = v1;
+                Order order = allOrders.get(cancelOrderId);
+                if (order != null) {
+                    CancelStrategy cancelStrategy = cancelStrategies.get(order.type);
+                    cancelStrategy.cancel(order, this);
+                    allOrders.remove(cancelOrderId);
+                }
+            } else if (type.equals("stop")) {
+                stopOrders.add(new Order(orderId, type, side, v1, v2));
+            } else {//'market' or 'limit'
+                Order order = new Order(orderId, type, side, v1, v2);
+                SortedSet<Double> executionPrices = execute(order);
+                if (!executionPrices.isEmpty()) {//if execution happens, check stop orders in order
+                    Iterator<Order> it = stopOrders.iterator();
+                    while (it.hasNext()) {
+                        Order stopOrder = it.next();
+                        if (triggers.get(stopOrder.side).triggered(stopOrder.price, executionPrices)) {
+                            executionPrices.addAll(execute(stopOrder));//make sure to update execution prices because execution of stop order may trigger other stop orders
+                            allOrders.remove(stopOrder.id);
+                            it.remove();//stop order is executed as market order, so it is simply removed once executed even if it was not entirely filled
+                            it = stopOrders.iterator();//reset stop orders iteration, so older stop orders are executed first
+                        }
+                    }
+                }
+                if (order.isLimit() && order.size > 0) {//book unfilled limit order for subsequent executions
+                    limitOrders.get(order.side).add(order);
+                    allOrders.put(order.id, order);
+                }
+            }
         }
 
         void print(Order taker, Order maker, long volume, double price) {
             System.out.println(String.format("match %s %s %s %.2f", taker.id, maker.id, volume, price));
         }
 
-        public void process(Order order) {
-            if (order.type == OrderType.cancel) {
-                Order existing = allOrders.get(order.value1);
-                if (existing != null) {
-                    allOrders.remove(existing.id);
-                    if (existing.type == OrderType.limit)
-                        orders.get(existing.side).remove(existing);
-                    else if (existing.type == OrderType.stop)
-                        stopOrders.remove(existing);
-                }
-            } else if (order.type == OrderType.stop) {
-                allOrders.put(order.id, order);
-                stopOrders.add(order);
-            } else {
-                SortedSet<Double> executionPrices = execute(order);
-                if (order.value1 == 0) {
-                    orders.get(order.side).remove(order);
-                    allOrders.remove(order.id);
-                }
-                if (!executionPrices.isEmpty()) {
-                    for (int i = 0; i < stopOrders.size(); i++) {
-                        Order stopOrder = stopOrders.get(i);
-                        if ((stopOrder.side == Side.sell && executionPrices.first() <= stopOrder.value2) || (stopOrder.side == Side.buy && executionPrices.last() >= stopOrder.value2)) {
-                            executionPrices.addAll(execute(stopOrder));
-                            allOrders.remove(stopOrder.id);
-                            stopOrders.remove(i);
-                            i = 0;
-                        }
-                    }
-                }
-            }
+        static <V> Map<String, V> newHashMap(String k1, V v1, String k2, V v2) {
+            Map<String, V> map = new HashMap<>(2);
+            map.put(k1, v1);
+            map.put(k2, v2);
+            return map;
         }
     }
 
-    enum OrderType {limit, stop, cancel, market}
-
-    enum Side {
-        buy {
-            @Override boolean canExecute(double orderPrice, double price) { return orderPrice >= price; }
-
-            @Override Side opposing() { return sell; }
-        },
-        sell {
-            @Override boolean canExecute(double orderPrice, double price) { return orderPrice <= price; }
-
-            @Override Side opposing() { return buy; }
-        },
-        na;
-
-        boolean canExecute(double orderPrice, double price) {return false;}
-
-        Side opposing() {return null;}
-    }
-
-    static class Order implements Comparable<Order> {
+    static class Order {
         final long id;
-        final OrderType type;
-        final Side side;
-        long value1;
-        double value2;
+        final String side, type;
+        final double price;
+        long size;//size can change after successful execution(s)
 
-        Order(long id, String type, String side, long value1, double value2) {
+        Order(long id, String type, String side, long size, double price) {
             this.id = id;
-            this.type = OrderType.valueOf(type);
-            this.side = Side.valueOf(side);
-            this.value1 = value1;
-            this.value2 = value2;
+            this.type = type;
+            this.side = side;
+            this.size = size;
+            this.price = price;
         }
 
-        @Override public String toString() {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("Order");
-            sb.append("{id=").append(id);
-            sb.append(", type=").append(type);
-            sb.append(", side=").append(side);
-            sb.append(", value1=").append(value1);
-            sb.append(", value2=").append(value2);
-            sb.append('}');
-            return sb.toString();
-        }
+        boolean isLimit() { return this.type.equals("limit"); }
+    }
 
-        @Override public int compareTo(Order o) { return Long.compare(id, o.id); }
+    @FunctionalInterface interface MatchingStrategy {
+        /**Returns false if orders can not be match (e.g. limit price is not satisfied for limit orders)*/
+        boolean matches(Order order, Order opposingOrder);
+    }
+
+    @FunctionalInterface interface CancelStrategy {
+        void cancel(Order order, OrderBook book);
+    }
+
+    @FunctionalInterface interface TriggerStrategy {
+        boolean triggered(double threshold, SortedSet<Double> prices);
     }
 }
