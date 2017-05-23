@@ -1,35 +1,35 @@
-import java.io.*;
-import java.util.concurrent.*;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class Solution {
-    static BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(1);
-
     public static void main(String[] args) throws FileNotFoundException {
-        Thread t = new Thread(() -> {
-            getNextTask(queue);
-            System.out.println(Thread.currentThread().isInterrupted());
-        });
-        t.start();
-        t.interrupt();
-    }
-
-    static Integer getNextTask(BlockingQueue<Integer> queue) {
-        boolean interrupted = false;
-        try {
-            while (!interrupted) {
-                try {
-                    return queue.take();
-                } catch (InterruptedException e) {
-                    interrupted = true;
+        //Scanner in = new Scanner(new FileInputStream("hr/src/in"));
+        Scanner in = new Scanner(System.in);
+        int[] cookies = {5, 2, 1};
+        int T = in.nextInt();
+        for (int t = 0; t < T; t++) {
+            int n = in.nextInt();
+            int[] a = new int[n];
+            for (int i = 0; i < n; i++)
+                a[i] = in.nextInt();
+            int min = Arrays.stream(a).min().getAsInt();
+            int[] mins = {min, min - 1, min - 2};
+            int minCount = Integer.MAX_VALUE;
+            for (int m : mins) {
+                int count = 0;
+                for (int i : a) {
+                    int diff = i - m;
+                    if (diff > 0) {
+                        for (int c : cookies) {
+                            count += diff / c;
+                            diff = diff % c;
+                        }
+                    }
                 }
+                minCount = Math.min(count, minCount);
             }
-        } finally {
-            if (interrupted) {
-                System.out.println(Thread.currentThread().isInterrupted());
-                Thread.currentThread().interrupt();
-                System.out.println(Thread.currentThread().isInterrupted());
-            }
+            System.out.println(minCount);
         }
-        return 0;
     }
 }
