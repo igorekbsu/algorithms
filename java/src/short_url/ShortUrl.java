@@ -1,3 +1,4 @@
+package short_url;
 public class ShortUrl {
     static final String CHARS = "23456789bcdfghjkmnopqrstvwxyzABCDFGHJKLMNPQSTVWXYZ";
     static final int BASE = CHARS.length();

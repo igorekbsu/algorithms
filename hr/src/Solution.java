@@ -1,18 +1,9 @@
-import java.util.Scanner;
-
 public class Solution {
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        int T = in.nextInt();
-        for (int t = 0; t < T; t++)
-            System.out.println(isPrime(in.nextInt()) ? "Prime" : "Not prime");
-    }
-
-    static boolean isPrime(int n) {
-        if (n == 1) return false;
-        double sqrt = Math.sqrt(n);
-        for (int i = 2; i <= sqrt; i++)
-            if (n % i == 0) return false;
-        return true;
+        int T = 5, start = 4;
+        StringBuilder b = new StringBuilder("-1 0 1");
+        System.out.println(T);
+        for (int t = 0, next = -1; t < T; t++, next *= -1)
+            System.out.println((start + t) + " " + (start + t - 1) + "\n" + b.append(" ").append(next));
     }
 }
