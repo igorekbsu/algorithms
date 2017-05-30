@@ -1,20 +1,28 @@
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Solution {
     public static void main(String[] args) {
         Solution s = new Solution();
-        System.out.println(s.addBinary("1", "11"));
     }
 
-    public String addBinary(String a, String b) {
-        StringBuilder sum = new StringBuilder();
-        int aEnd = a.length() - 1, bEnd = b.length() - 1, carry = 0;
-        while (aEnd >= 0 || bEnd >= 0) {
-            int r = carry;
-            if (aEnd >= 0) r += a.charAt(aEnd--) - '0';
-            if (bEnd >= 0) r += b.charAt(bEnd--) - '0';
-            sum.append(r % 2);
-            carry = r / 2;
+    public void setZeroes(int[][] matrix) {
+        if (matrix.length == 0) return;
+        Set<Integer> zeroColumns = new HashSet<>();
+        for (int i = 0; i < matrix.length; i++) {
+            boolean zero = false;
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == 0) {
+                    zeroColumns.add(j);
+                    zero = true;
+                }
+            }
+            if (zero) Arrays.fill(matrix[i], 0);
         }
-        if (carry != 0) sum.append(carry);
-        return sum.reverse().toString();
+        for (Integer j : zeroColumns) {
+            for (int i = 0; i < matrix.length; i++)
+                matrix[i][j] = 0;
+        }
     }
 }
