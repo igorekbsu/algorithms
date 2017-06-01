@@ -1,28 +1,25 @@
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Solution {
     public static void main(String[] args) {
         Solution s = new Solution();
+        System.out.println(s.letterCombinations("233"));
     }
 
-    public void setZeroes(int[][] matrix) {
-        if (matrix.length == 0) return;
-        Set<Integer> zeroColumns = new HashSet<>();
-        for (int i = 0; i < matrix.length; i++) {
-            boolean zero = false;
-            for (int j = 0; j < matrix[0].length; j++) {
-                if (matrix[i][j] == 0) {
-                    zeroColumns.add(j);
-                    zero = true;
-                }
+    public List<String> letterCombinations(String digits) {
+        String[] letters = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        LinkedList<String> r = new LinkedList<>();
+        r.add("");
+        for (int i = 0; i < digits.length(); i++) {
+            while (r.peek().length() == i) {
+                String s = r.remove();
+                int d = Character.getNumericValue(digits.charAt(i));
+                for (char c : letters[d].toCharArray())
+                    r.add(s + c);
             }
-            if (zero) Arrays.fill(matrix[i], 0);
         }
-        for (Integer j : zeroColumns) {
-            for (int i = 0; i < matrix.length; i++)
-                matrix[i][j] = 0;
-        }
+        return r;
     }
+
 }

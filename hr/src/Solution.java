@@ -1,14 +1,19 @@
-import java.util.Scanner;
-
 public class Solution {
     public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
-        int T = in.nextInt();
-        for (int t = 0; t < T; t++) {
-            int n = in.nextInt(), k = in.nextInt();
-            if ((k | (k - 1)) <= n)
-                System.out.println(k - 1);
-            else System.out.println(k - 2);
+        Solution s = new Solution();
+        System.out.println(s.numDecodings("412"));
+    }
+
+    public int numDecodings(String s) {
+        if (s == null || s.length() == 0) return 0;
+        int[] dp = new int[s.length() + 1];
+        dp[0] = 1; dp[1] = s.charAt(0) != '0' ? 1 : 0;
+        for (int i = 2; i <= s.length(); i++) {
+            int d = Character.digit(s.charAt(i - 1), 10);
+            if (d > 0) dp[i] += dp[i - 1];
+            d = Integer.parseInt(s.substring(i - 2, i));
+            if (d >= 10 && d <= 26) dp[i] += dp[i - 2];
         }
+        return dp[s.length()];
     }
 }
