@@ -2,10 +2,10 @@ package trie;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Trie {
+public class WordDictionary {
     Node root = new Node();
 
-    public void insert(String word) {
+    public void addWord(String word) {
         Node node = root;
         for (int i = 0; i < word.length(); i++)
             node = node.kids.computeIfAbsent(word.charAt(i), k -> new Node());
@@ -13,19 +13,20 @@ public class Trie {
     }
 
     public boolean search(String word) {
-        Node node = find(word);
-        return node != null && node.isWord;
+        return search(word, 0, root);
     }
 
-    public boolean startsWith(String pre) {
-        return find(pre) != null;
-    }
-
-    Node find(String s) {
-        Node node = root;
-        for (int i = 0; i < s.length() && node != null; i++)
-            node = node.kids.get(s.charAt(i));
-        return node;
+    boolean search(String word, int i, Node node) {
+        if (node == null) return false;
+        if (i == word.length()) return node.isWord;
+        char c = word.charAt(i);
+        if (c != '.') {
+            return search(word, i + 1, node.kids.get(c));
+        } else {
+            for (Node kid : node.kids.values())
+                if (search(word, i + 1, kid)) return true;
+        }
+        return false;
     }
 
     class Node {
