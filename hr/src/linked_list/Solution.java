@@ -7,9 +7,8 @@ public class Solution {
         Node three = new Node(five, 3);
         Node one = new Node(three, 1);
         print(one);
-        Node two = new Node(three, 2);
-        print(two);
-        System.out.println(FindMergeNode(one, two));
+        print(reverse(one));
+
     }
 
     static int FindMergeNode(Node a, Node b) {
