@@ -1,10 +1,25 @@
-package min_window_substring;
+package substring;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Solution {
     public static void main(String[] args) {
-        System.out.println(new Solution().minWindow("ADOBECODEBANC", "ABC"));
+        System.out.println(new Solution().lengthOfLongestSubstring("abcdeeabcdefdg"));
+    }
+
+    //len of longest substring without repeating chars
+    public int lengthOfLongestSubstring(String s) {
+        Map<Character, Integer> m = new HashMap<>();
+        int start = 0, end = 0, maxLen = 0;
+        while (end < s.length()) {
+            char c = s.charAt(end);
+            if (m.containsKey(c))
+                start = Math.max(start, m.get(c) + 1);
+            m.put(c, end);
+            maxLen = Math.max(maxLen, end - start + 1);
+            end++;
+        }
+        return maxLen;
     }
 
     public String minWindow(String s, String t) {
