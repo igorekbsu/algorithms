@@ -52,4 +52,21 @@ public class Solution {
             return s.substring(minStart, minStart + minLen);
         return "";
     }
+
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        int len = 0, start = 0;
+        Map<Character, Integer> map = new HashMap<>();
+        char[] a = s.toCharArray();
+        for (int i = 0; i < a.length; i++) {
+            map.put(a[i], map.getOrDefault(a[i], 0) + 1);
+            while (map.size() > k) {
+                Integer count = map.get(a[start]) - 1;
+                if (count == 0) map.remove(a[start]);
+                else map.put(a[start], count);
+                start++;
+            }
+            len = Math.max(len, i - start + 1);
+        }
+        return len;
+    }
 }
