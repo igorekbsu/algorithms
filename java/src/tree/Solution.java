@@ -2,6 +2,7 @@ package tree;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -54,6 +55,20 @@ public class Solution {
         for (int i = min; i <= max; i++)
             r.add(map.get(i));
         return r;
+    }
+
+    //returns all root to leaf paths 5->3->2
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> paths = new LinkedList<>();
+        if (root == null) return paths;
+        btPaths(root, "", paths);
+        return paths;
+    }
+
+    void btPaths(TreeNode node, String pre, List<String> paths) {
+        if (node.left == null && node.right == null) paths.add(String.valueOf(pre + node.val));
+        if(node.left != null)btPaths(node.left, pre + node.val + "->", paths);
+        if(node.right != null)btPaths(node.right, pre + node.val + "->", paths);
     }
 
     public class TreeNode {
