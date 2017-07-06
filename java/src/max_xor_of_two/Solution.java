@@ -1,29 +1,41 @@
 package max_xor_of_two;
-import java.util.HashSet;
-import java.util.Set;
-
 public class Solution {
     public static void main(String[] args) {
-        int[] a = {14, 11, 7, 2, 12};
+        int[] a = {3, 10, 5, 25, 2, 8};
+        for (int n : a)
+            System.out.println(Integer.toBinaryString(n));
         System.out.println(new Solution().findMaximumXOR(a));
     }
 
     public int findMaximumXOR(int[] nums) {
-        int max = 0, mask = 0;
-        for (int i = 3; i >= 0; i--) {
-            mask = mask | (1 << i);
-            Set<Integer> set = new HashSet<>();
-            for (int num : nums) {
-                set.add(num & mask);
-            }
-            int tmp = max | (1 << i);
-            for (int prefix : set) {
-                if (set.contains(tmp ^ prefix)) {
-                    max = tmp;
-                    break;
-                }
+        Trie root = new Trie();
+        for (int n : nums) {
+            Trie node = root;
+            for (int i = 31; i >= 0; i--) {
+                int bit = (n >>> i) & 1;
+                if (node.kids[bit] == null)
+                    node.kids[bit] = new Trie();
+                node = node.kids[bit];
             }
         }
+        int max = Integer.MIN_VALUE;
+        for (int n : nums) {
+            Trie node = root;
+            int sum = 0;
+            for (int i = 31; i >= 0; i--) {
+                int bit = (n >>> i) & 1;
+                if (node.kids[bit ^ 1] != null) {
+                    sum += 1 << i;
+                    node = node.kids[bit ^ 1];
+                } else
+                    node = node.kids[bit];
+            }
+            max = Math.max(sum, max);
+        }
         return max;
+    }
+
+    class Trie {
+        Trie[] kids = new Trie[2];
     }
 }
