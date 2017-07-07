@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Stack;
 
 public class Solution {
     int max;
@@ -67,8 +68,55 @@ public class Solution {
 
     void btPaths(TreeNode node, String pre, List<String> paths) {
         if (node.left == null && node.right == null) paths.add(String.valueOf(pre + node.val));
-        if(node.left != null)btPaths(node.left, pre + node.val + "->", paths);
-        if(node.right != null)btPaths(node.right, pre + node.val + "->", paths);
+        if (node.left != null) btPaths(node.left, pre + node.val + "->", paths);
+        if (node.right != null) btPaths(node.right, pre + node.val + "->", paths);
+    }
+
+    public List<Integer> preorderTraversalRecursive(TreeNode root) {
+        List<Integer> r = new LinkedList<>();
+        preorder(root, r);
+        return r;
+    }
+
+    void preorder(TreeNode node, List<Integer> r) {
+        if (node != null) {
+            r.add(node.val);
+            preorder(node.left, r);
+            preorder(node.right, r);
+        }
+    }
+
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> r = new LinkedList<>();
+        if (root == null) return r;
+        Stack<TreeNode> s = new Stack<>();
+        s.add(root);
+        while (!s.isEmpty()) {
+            TreeNode node = s.pop();
+            r.add(node.val);
+            if (node.right != null)
+                s.push(node.right);
+            if (node.left != null)
+                s.push(node.left);
+        }
+        return r;
+    }
+
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> r = new LinkedList<>();
+        if (root == null) return r;
+        Stack<TreeNode> s = new Stack<>();
+        TreeNode node = root;
+        while (node != null || !s.isEmpty()) {
+            while (node != null) {
+                s.add(node);
+                node = node.left;
+            }
+            node = s.pop();
+            r.add(node.val);
+            node = node.right;
+        }
+        return r;
     }
 
     public class TreeNode {
