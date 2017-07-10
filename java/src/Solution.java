@@ -1,24 +1,55 @@
-import java.util.Arrays;
-
 public class Solution {
     public static void main(String[] args) {
-        int[] a = {3, 5, 2, 1, 6, 4};
-        new Solution().wiggleSort(a);
-        System.out.println(Arrays.toString(a));
-    }
-
-    public void wiggleSort(int[] nums) {
-        for (int i = 0; i < nums.length - 1; i++)
-            if (i % 2 == 0) {
-                if (nums[i] > nums[i + 1])
-                    swap(nums, i, i + 1);
-            } else {
-                if (nums[i] < nums[i + 1])
-                    swap(nums, i, i + 1);
+        String str = "Hello world igor y";
+        ListNode root = new ListNode();
+        ListNode node = root;
+        for (int i = 0; i < str.length(); i++) {
+            node.c = str.charAt(i);
+            if (i < str.length() - 1) {
+                node.next = new ListNode();
+                node = node.next;
             }
+        }
+        print(root);
+        print(reverseWords(root));
     }
 
-    void swap(int[] a, int i, int j) {
-        int t = a[i]; a[i] = a[j]; a[j] = t;
+    static ListNode reverseWords(ListNode root) {
+        ListNode reversed = null, right = root, lastEnd = null;
+        while (true) {
+            ListNode left = right;
+            while (right != null && right.c != ' ')
+                right = right.next;
+            ListNode r = right;
+            while (left != right) {
+                ListNode next = left.next;
+                left.next = r;
+                r = left;
+                left = next;
+            }
+            if (reversed == null) {
+                reversed = r;
+            } else
+                lastEnd.next = r;
+            if (right == null) break;
+            lastEnd = right;
+            right = right.next;
+        }
+        return reversed;
+    }
+
+    static void print(ListNode node) {
+        ListNode n = node;
+        StringBuilder b = new StringBuilder();
+        while (n.next != null) {
+            b.append(n.c).append("->");
+            n = n.next;
+        }
+        System.out.println(b.append(n.c));
+    }
+
+    static class ListNode {
+        Character c;
+        ListNode next;
     }
 }
