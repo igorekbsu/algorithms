@@ -8,42 +8,32 @@ public class Solution {
 
     public int largestRectangleArea(int[] heights) {
         if (heights.length == 0) return 0;
-        Stack<Rec> s = new Stack<>();
-        s.add(new Rec(0, 0));
+        Stack<int[]> s = new Stack<>();
+        s.add(new int[]{0, 0});
         int max = 0;
         for (int h : heights) {
-            Rec current = new Rec(h, 1), top = s.peek();
-            if (top.h < current.h) {
+            int[] current = new int[]{h, 1}, top = s.peek();
+            if (top[0] < current[0]) {
                 s.add(current);
-            } else if (top.h == current.h) {
-                top.w++;
+            } else if (top[0] == current[0]) {
+                top[1]++;
             } else {
                 int width = 0;
-                while (top.h > current.h) {
+                while (top[0] > current[0]) {
                     s.pop();
-                    width += top.w;
-                    max = Math.max(max, top.h * width);
+                    width += top[1];
+                    max = Math.max(max, top[0] * width);
                     top = s.peek();
                 }
-                current.w += width;
+                current[1] += width;
                 s.add(current);
             }
         }
-        while (s.peek().h != 0) {
-            Rec top = s.pop();
-            max = Math.max(max, top.h * top.w);
-            s.peek().w += top.w;
-
+        while (s.peek()[0] != 0) {
+            int[] top = s.pop();
+            max = Math.max(max, top[0] * top[1]);
+            s.peek()[1] += top[1];
         }
         return max;
-    }
-
-    class Rec {
-        int h, w;
-
-        Rec(int h, int w) {
-            this.h = h;
-            this.w = w;
-        }
     }
 }
