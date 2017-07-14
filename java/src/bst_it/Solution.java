@@ -1,5 +1,6 @@
 package bst_it;
 import java.util.Stack;
+import static nub.Nu.TreeNode;
 
 public class Solution {
     public class BSTIterator {
@@ -23,13 +24,5 @@ public class Solution {
             for (; n != null; n = n.left)
                 s.push(n);
         }
-    }
-
-    public class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) { val = x; }
     }
 }

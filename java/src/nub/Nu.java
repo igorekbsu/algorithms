@@ -9,4 +9,11 @@ public class Nu {
 
         List<NestedInteger> getList();
     }
+
+    public static class TreeNode {
+        public int val;
+        public TreeNode left, right;
+
+        public TreeNode(int x) { val = x; }
+    }
 }
