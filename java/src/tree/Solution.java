@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import static nub.Nu.TreeNode;
 
 public class Solution {
     int max;
@@ -119,11 +120,23 @@ public class Solution {
         return r;
     }
 
-    public class TreeNode {
-        int val;
-        TreeNode left;
-        TreeNode right;
-
-        TreeNode(int x) { val = x; }
+    public int sumOfLeftLeaves(TreeNode root) {
+        int sum = 0;
+        if (root == null) return sum;
+        Stack<TreeNode> s = new Stack<>();
+        TreeNode node = root;
+        while (!s.isEmpty() || node != null) {
+            while (node != null) {
+                s.push(node);
+                node = node.left;
+            }
+            node = s.pop();
+            if (node.right == null && node.left == null)
+                sum += node.val;
+            node = node.right;
+            if (node != null && node.right == null && node.left == null)
+                node = null;
+        }
+        return sum;
     }
 }
