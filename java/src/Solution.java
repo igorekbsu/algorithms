@@ -1,55 +1,35 @@
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class Solution {
     public static void main(String[] args) {
-        String str = "Hello world igor y";
-        ListNode root = new ListNode();
-        ListNode node = root;
-        for (int i = 0; i < str.length(); i++) {
-            node.c = str.charAt(i);
-            if (i < str.length() - 1) {
-                node.next = new ListNode();
-                node = node.next;
+        String s = "catsanddog";
+        List<String> dict = Arrays.asList("cat", "cats", "and", "sand", "dog");
+        System.out.println(new Solution().wordBreak(s, dict));
+    }
+
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        return word_Break(s, new HashSet<>(wordDict), 0, new HashMap<>());
+    }
+
+    public List<String> word_Break(String s, Set<String> wordDict, int start, Map<Integer, List<String>> cache) {
+        if (cache.containsKey(start))
+            return cache.get(start);
+        LinkedList<String> res = new LinkedList<>();
+        if (start == s.length())
+            res.add("");
+        for (int end = start + 1; end <= s.length(); end++)
+            if (wordDict.contains(s.substring(start, end))) {
+                List<String> list = word_Break(s, wordDict, end, cache);
+                for (String item : list)
+                    res.add(s.substring(start, end) + (item.equals("") ? "" : " ") + item);
             }
-        }
-        print(root);
-        print(reverseWords(root));
-    }
-
-    static ListNode reverseWords(ListNode root) {
-        ListNode reversed = null, right = root, lastEnd = null;
-        while (true) {
-            ListNode left = right;
-            while (right != null && right.c != ' ')
-                right = right.next;
-            ListNode r = right;
-            while (left != right) {
-                ListNode next = left.next;
-                left.next = r;
-                r = left;
-                left = next;
-            }
-            if (reversed == null) {
-                reversed = r;
-            } else
-                lastEnd.next = r;
-            if (right == null) break;
-            lastEnd = right;
-            right = right.next;
-        }
-        return reversed;
-    }
-
-    static void print(ListNode node) {
-        ListNode n = node;
-        StringBuilder b = new StringBuilder();
-        while (n.next != null) {
-            b.append(n.c).append("->");
-            n = n.next;
-        }
-        System.out.println(b.append(n.c));
-    }
-
-    static class ListNode {
-        Character c;
-        ListNode next;
+        cache.put(start, res);
+        return res;
     }
 }
