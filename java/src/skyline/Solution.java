@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 public class Solution {
     public static void main(String[] args) {
         //int[][] buildings = {{2, 9, 10}, {3, 7, 15}, {5, 12, 12}, {15, 20, 10}, {19, 24, 8}};
-        int[][] buildings = {{1, 4, 1}, {2, 3, 2}};
+        int[][] buildings = {{1, 2, 1}, {1, 2, 2}};
         List<int[]> skyline = new Solution().getSkyline(buildings);
         for (int[] ints : skyline) {
             System.out.println(Arrays.toString(ints));
