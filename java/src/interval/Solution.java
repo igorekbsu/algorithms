@@ -1,6 +1,7 @@
 package interval;
 import java.util.LinkedList;
 import java.util.List;
+import nub.Nu.Interval;
 
 public class Solution {
     public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
@@ -14,15 +15,5 @@ public class Solution {
         while (i < intervals.size())
             r.add(intervals.get(i++));
         return r;
-    }
-
-    public class Interval {
-        int start;
-        int end;
-
-        Interval() { start = 0; end = 0; }
-
-        Interval(int s, int e) { start = s; end = e; }
-
     }
 }
