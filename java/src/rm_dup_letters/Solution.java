@@ -1,7 +1,7 @@
 package rm_dup_letters;
 public class Solution {
     public static void main(String[] args) {
-        System.out.println(new Solution().removeDuplicateLetters("cbacdcbc"));
+        System.out.println(new Solution().removeDuplicateLetters("zayzap"));
     }
 
     public String removeDuplicateLetters(String s) {

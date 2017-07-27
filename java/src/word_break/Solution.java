@@ -6,15 +6,14 @@ import java.util.Set;
 public class Solution {
     public boolean wordBreak(String s, List<String> dict) {
         Set<String> words = new HashSet<>(dict);
-        boolean[] m = new boolean[s.length() + 1];
-        m[0] = true;
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
         for (int i = 1; i <= s.length(); i++)
-            for (int j = 0; j < i; j++) {
-                if (m[j] && words.contains(s.substring(j, i))) {
-                    m[i] = true;
+            for (int j = 0; j < i; j++)
+                if (dp[j] && words.contains(s.substring(j, i))) {
+                    dp[i] = true;
                     break;
                 }
-            }
-        return m[s.length()];
+        return dp[s.length()];
     }
 }

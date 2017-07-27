@@ -3,10 +3,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Solution {
-    public int longestConsecutive(int[] nums) {
-        Map<Integer, Integer> map = new HashMap<>(nums.length);
+    public static void main(String[] args) {
+        int[] a = {1, 2, 0, 1};
+        System.out.println(new Solution().longestConsecutive(a));
+    }
+
+    public int longestConsecutive(int[] a) {
+        Map<Integer, Integer> map = new HashMap<>();
         int max = 0;
-        for (int n : nums) {
+        for (int n : a) {
             if (!map.containsKey(n)) {
                 int left = map.getOrDefault(n - 1, 0);
                 int right = map.getOrDefault(n + 1, 0);

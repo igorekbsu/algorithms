@@ -4,27 +4,26 @@ import java.util.Set;
 
 public class Solution {
     public static void main(String[] args) {
-        System.out.println(new Solution().reverseVowels("aA"));
+        System.out.println(new Solution().reverseVowels("bb"));
         System.out.println(new Solution().reverseVowels("leet code"));
     }
 
     public String reverseVowels(String s) {
-        Set<Character> vowels = new HashSet<>();
-        vowels.add('e'); vowels.add('a'); vowels.add('i'); vowels.add('o'); vowels.add('u');
-        vowels.add('E'); vowels.add('A'); vowels.add('I'); vowels.add('O'); vowels.add('U');
+        if (s.isEmpty()) return s;
         char[] a = s.toCharArray();
-        int left = 0, right = a.length - 1;
-        while (left < right) {
-            while (left < right && !vowels.contains(a[left]))
-                left++;
-            while (left < right && !vowels.contains(a[right]))
-                right--;
-            if (left < right) {
-                char t = a[left];
-                a[left] = a[right];
-                a[right] = t;
-            }
-            left++; right--;
+        Set<Character> v = new HashSet<>();
+        v.add('a'); v.add('e'); v.add('i'); v.add('o'); v.add('u');
+        v.add('A'); v.add('E'); v.add('I'); v.add('O'); v.add('U');
+        int lo = 0, hi = s.length() - 1;
+        while (lo < hi) {
+            while (lo < hi && !v.contains(a[lo]))
+                lo++;
+            while (hi > lo && !v.contains(a[hi]))
+                hi--;
+            char t = a[lo];
+            a[lo] = a[hi];
+            a[hi] = t;
+            lo++; hi--;
         }
         return new String(a);
     }

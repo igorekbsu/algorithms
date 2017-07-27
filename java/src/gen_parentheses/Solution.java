@@ -9,18 +9,18 @@ public class Solution {
 
     public List<String> generateParenthesis(int n) {
         List<String> r = new LinkedList<>();
-        genParen("", r, 0, 2 * n);
+        gen(n * 2, "", r, 0);
         return r;
     }
 
-    void genParen(String s, List<String> r, int open, int n) {
+    void gen(int n, String s, List<String> r, int count) {
         if (s.length() == n) {
-            if (open == 0)
+            if (count == 0)
                 r.add(s);
         } else {
-            genParen(s + ")", r, open - 1, n);
-            if (open >= 0)
-                genParen(s + "(", r, open + 1, n);
+            gen(n, s + "(", r, count + 1);
+            if (count > 0)
+                gen(n, s + ")", r, count - 1);
         }
     }
 }

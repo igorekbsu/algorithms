@@ -10,6 +10,13 @@ public class Solution {
             pushAll(root);
         }
 
+        void pushAll(TreeNode node) {
+            while (node != null) {
+                s.push(node);
+                node = node.left;
+            }
+        }
+
         public boolean hasNext() {
             return !s.isEmpty();
         }
@@ -18,11 +25,6 @@ public class Solution {
             TreeNode node = s.pop();
             pushAll(node.right);
             return node.val;
-        }
-
-        void pushAll(TreeNode n) {
-            for (; n != null; n = n.left)
-                s.push(n);
         }
     }
 }

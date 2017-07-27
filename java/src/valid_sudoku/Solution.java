@@ -12,15 +12,15 @@ public class Solution {
     }
 
     public boolean isValidSudoku(char[][] board) {
-        int[][] b = new int[9][3];
-        for (int i = 0; i < 9; i++)
-            for (int j = 0; j < 9; j++) {
+        int[] rows = new int[9], cols = new int[9], squares = new int[9];
+        for (int i = 0; i < board.length; i++)
+            for (int j = 0; j < board[0].length; j++) {
                 if (board[i][j] != '.') {
-                    int d = 1 << Character.digit(board[i][j], 10);
-                    int[] indices = {i, j, i / 3 * 3 + j / 3};
-                    for (int k = 0; k < indices.length; k++)
-                        if ((b[indices[k]][k] & d) > 0) return false;
-                        else b[indices[k]][k] |= d;
+                    int n = board[i][j] - '0';
+                    int bit = 1 << n;
+                    if ((rows[i] & bit) != 0 || (cols[j] & bit) != 0 || (squares[(i - 1) / 3 * 3 + j / 3] & bit) != 0)
+                        return false;
+                    rows[i] |= bit; cols[j] |= bit; squares[(i - 1) / 3 * 3 + j / 3] |= bit;
                 }
             }
         return true;
