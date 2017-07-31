@@ -1,13 +1,27 @@
 package nub;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Nu {
-    public interface NestedInteger {
-        boolean isInteger();
+    public static class NestedInteger {
+        int val;
+        List<NestedInteger> list;
 
-        Integer getInteger();
+        public NestedInteger(int val) {
+            this.val = val;
+        }
 
-        List<NestedInteger> getList();
+        public NestedInteger() {
+            list = new LinkedList<>();
+        }
+
+        public void add(NestedInteger ni) { list.add(ni);}
+
+        public boolean isInteger() { return list == null;}
+
+        public Integer getInteger() {return val;}
+
+        public List<NestedInteger> getList() {return list;}
     }
 
     public static class TreeNode {
