@@ -43,5 +43,3 @@ def print_path(graph, s, v):
 
 bfs(graph, vs[0])
 print_path(graph, vs[0], vs[6])
-
-  
