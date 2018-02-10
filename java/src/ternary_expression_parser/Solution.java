@@ -1,6 +1,5 @@
 package ternary_expression_parser;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.LinkedList;
 
 public class Solution {
     public static void main(String[] args) {
@@ -9,7 +8,7 @@ public class Solution {
     }
 
     public String parseTernary(String e) {
-        Deque<Character> stack = new ArrayDeque<>(e.length());
+        LinkedList<Character> stack = new LinkedList<>();
         for (int i = e.length() - 1; i >= 0; i--) {
             char c = e.charAt(i);
             if (c == '?') {
