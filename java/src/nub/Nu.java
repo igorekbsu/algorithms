@@ -47,6 +47,16 @@ public class Nu {
             b.append(n.val);
             return b.toString();
         }
+
+        public static ListNode create(int... values) {
+            ListNode head = new ListNode(values[0]);
+            ListNode node = head;
+            for (int i = 1; i < values.length; i++) {
+                node.next = new ListNode(values[i]);
+                node = node.next;
+            }
+            return head;
+        }
     }
 
     public static class Interval {
