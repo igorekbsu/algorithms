@@ -66,4 +66,12 @@ public class Nu {
 
         public Interval(int s, int e) { start = s; end = e; }
     }
+
+    public static void print(int[][] m) {
+        for (int[] r : m) {
+            for (int e : r)
+                System.out.print(e);
+            System.out.println();
+        }
+    }
 }
