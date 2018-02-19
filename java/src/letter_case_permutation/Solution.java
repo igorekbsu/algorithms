@@ -6,6 +6,7 @@ public class Solution {
     public static void main(String[] args) {
         System.out.println(new Solution().letterCasePermutation("a1b1"));
     }
+
     public List<String> letterCasePermutation(String S) {
         LinkedList<String> r = new LinkedList<>();
         r.add(S);
@@ -14,9 +15,10 @@ public class Solution {
             if (Character.isLetter(c)) {
                 int size = r.size();
                 for (int j = 0; j < size; j++) {
-                    String poll = r.poll();
-                    r.add(poll.substring(0, i) + Character.toLowerCase(c) + poll.substring(i + 1));
-                    r.add(poll.substring(0, i) + Character.toUpperCase(c) + poll.substring(i + 1));
+                    String s = r.poll();
+                    String left = s.substring(0, i), right = s.substring(i + 1);
+                    r.add(left + Character.toLowerCase(c) + right);
+                    r.add(left + Character.toUpperCase(c) + right);
                 }
             }
         }
