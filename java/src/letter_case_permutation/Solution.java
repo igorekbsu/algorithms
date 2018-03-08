@@ -14,7 +14,7 @@ public class Solution {
             char c = S.charAt(i);
             if (Character.isLetter(c)) {
                 int size = r.size();
-                for (int j = 0; j < size; j++) {
+                for (; size > 0; size--) {
                     String s = r.poll();
                     String left = s.substring(0, i), right = s.substring(i + 1);
                     r.add(left + Character.toLowerCase(c) + right);
