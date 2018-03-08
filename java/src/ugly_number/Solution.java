@@ -1,11 +1,9 @@
 package ugly_number;
 public class Solution {
     public boolean isUgly(int num) {
-        if (num <= 0) return false;
-        if (num == 1) return true;
-        for (int p : new int[]{2, 3, 5})
-            while (num % p == 0)
-                num /= p;
+        for(int i = 2; num > 0 && i < 6; i++)
+            while(num %i == 0)
+                num/=i;
         return num == 1;
     }
 }
