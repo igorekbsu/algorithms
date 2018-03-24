@@ -1,17 +1,20 @@
 package daily_temperatures;
-import java.util.Stack;
+import java.util.Arrays;
 
 public class Solution {
-    public int[] dailyTemperatures(int[] temperatures) {
-        Stack<Integer> stack = new Stack<>();
-        int[] ret = new int[temperatures.length];
-        for (int i = 0; i < temperatures.length; i++) {
-            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
-                int idx = stack.pop();
-                ret[idx] = i - idx;
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(new Solution().dailyTemperatures(new int[]{71, 68})));
+    }
+
+    public int[] dailyTemperatures(int[] t) {
+        int s[] = new int[t.length], top = -1, r[] = new int[t.length];
+        for (int i = 0; i < t.length; i++) {
+            while (top > -1 && t[s[top]] < t[i]) {
+                int j = s[top--];
+                r[j] = i - j;
             }
-            stack.push(i);
+            s[++top] = i;
         }
-        return ret;
+        return r;
     }
 }
