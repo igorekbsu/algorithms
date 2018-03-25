@@ -1,49 +1,71 @@
 package com;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Solution {
     public static void main(String[] args) {
-        System.out.println(new Solution().similarRGB("#1155cc"));
     }
 
-    public String similarRGB(String color) {
-        int r = Integer.parseInt(color.substring(1, 3), 16);
-        int g = Integer.parseInt(color.substring(3, 5), 16);
-        int b = Integer.parseInt(color.substring(5, 7), 16);
-        char[] map = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-        int max = Integer.MIN_VALUE;
-        String result = "";
-        for (int i = 0; i < 16; i++)
-            for (int j = 0; j < 16; j++)
-                for (int k = 0; k < 16; k++) {
-                    int a1 = 16 * i + i - r;
-                    int a2 = 16 * j + j - g;
-                    int a3 = 16 * k + k - b;
-                    int score = -a1 * a1 - a2 * a2 - a3 * a3;
-                    if (score > max) {
-                        max = score;
-                        result = "" + map[i] + map[i] + map[j] + map[j] + map[k] + map[k];
-                    }
-                }
-        return "#" + result;
+    public int[] numberOfLines(int[] widths, String S) {
+        int lines = 0, currWidth = 0;
+        for (char c : S.toCharArray()) {
+            currWidth += widths[c - 'a'];
+            if (currWidth == 100) {
+                lines++;
+                currWidth = 0;
+            } else if (currWidth > 100) {
+                lines++;
+                currWidth = widths[c - 'a'];
+            }
+        }
+        return new int[]{lines + 1, currWidth};
     }
 
-    public int minSwap(int[] A, int[] B) {
-        int i = 1   ;
-        for (; i < B.length; i++)
-            if (A[i - 1] >= A[i] || B[i - 1] >= B[i])
-                break;
-        if (i >= B.length) return 0;
-        swap(A, B, i - 1);
-        int swaps1 = minSwap(A, B);
-        swap(A, B, i - 1);
-        swap(A, B, i);
-        int swaps2 = minSwap(A, B);
-        swap(A, B, i);
-        return 1 + Math.min(swaps1, swaps2);
+    public int uniqueMorseRepresentations(String[] words) {
+        String[] morse = {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-",
+            "-.--", "--.."};
+        Set<String> s = new HashSet<>();
+        for (String word : words) {
+            StringBuilder b = new StringBuilder();
+            for (char c : word.toCharArray())
+                b.append(morse[c - 'a']);
+            s.add(b.toString());
+        }
+        return s.size();
     }
 
-    void swap(int[] A, int[] B, int i) {
-        int t = A[i];
-        A[i] = B[i];
-        B[i] = t;
+    public int maxIncreaseKeepingSkyline(int[][] grid) {
+        int[] top = new int[grid.length], left = new int[grid.length];
+        for (int i = 0; i < grid.length; i++) {
+            left[i] = grid[i][0];
+            top[i] = grid[0][i];
+            for (int j = 1; j < grid.length; j++) {
+                left[i] = Math.max(left[i], grid[i][j]);
+                top[i] = Math.max(top[i], grid[j][i]);
+            }
+        }
+        int max = 0;
+        for (int i = 0; i < grid.length; i++)
+            for (int j = 0; j < grid.length; j++) {
+                max += Math.min(left[i], top[j]) - grid[i][j];
+            }
+        return max;
     }
+
+    public boolean splitArraySameAverage(int[] A) {
+        double sum = 0;
+        for (int n : A)
+            sum += n;
+        double avr = sum / A.length;
+        Arrays.sort(A);
+        return split(A, 0, A.length - 1, avr, 0);
+    }
+
+    boolean split(int[] a, int left, int right, double avr, double sum) {
+        if(sum == avr)return true;
+        
+        return false;
+    }
+
 }
