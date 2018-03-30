@@ -1,18 +1,24 @@
 package one_edit_distance;
 public class Solution {
-    public static void main(String[] args) {
-        System.out.println(new Solution().isOneEditDistance("a", ""));
+    public boolean isOneEditDistance(String s, String t) {
+        int lenDiff = s.length() - t.length();
+        if (lenDiff < 0)
+            return isOneEditDistance(t, s);
+        if (lenDiff > 1) return false;
+        char[] a = s.toCharArray(), b = t.toCharArray();
+        for (int i = 0; i < b.length; i++)
+            if (a[i] != b[i])
+                if (lenDiff != 0)
+                    return match(a, b, i + 1, i);
+                else
+                    return match(a, b, i + 1, i + 1);
+        return lenDiff != 0;
     }
 
-    public boolean isOneEditDistance(String s, String t) {//len(s) >= len(t)
-        if (s.length() < t.length()) return isOneEditDistance(t, s);
-        if (s.length() - t.length() > 1) return false;
-        for (int i = 0; i < t.length(); i++)
-            if (s.charAt(i) != t.charAt(i))
-                if (s.length() == t.length())
-                    return s.substring(i + 1).equals(t.substring(i + 1));
-                else
-                    return s.substring(i + 1).equals(t.substring(i));
-        return s.length() - t.length() == 1;
+    boolean match(char[] s, char[] t, int i, int j) {
+        while (i < s.length)
+            if (s[i++] != t[j++])
+                return false;
+        return true;
     }
 }
