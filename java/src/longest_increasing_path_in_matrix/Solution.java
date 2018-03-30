@@ -1,36 +1,22 @@
 package longest_increasing_path_in_matrix;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Solution {
-    public static void main(String[] args) {
-        int[][] m = {
-                {9, 9, 4},
-                {6, 6, 8},
-                {2, 1, 1}
-        };
-        System.out.println(new Solution().longestIncreasingPath(m));
+    public boolean isPowerOfFour(int num) {
+        return num > 0 && (num & (num - 1)) == 0 && (num & 0x55555555) != 0;
     }
 
-    public int longestIncreasingPath(int[][] matrix) {
-        if (matrix.length == 0) return 0;
-        int maxPath = 0;
-        int[][] cache = new int[matrix.length][matrix[0].length];
-        int[] delta = {0, 1, 0, -1, 0};
-        for (int i = 0; i < matrix.length; i++)
-            for (int j = 0; j < matrix[0].length; j++) {
-                int path = visit(matrix, i, j, cache, delta);
-                maxPath = Math.max(path, maxPath);
-            }
-        return maxPath;
-    }
-
-    int visit(int[][] m, int i, int j, int[][] cache, int[] delta) {
-        if (cache[i][j] > 0) return cache[i][j];
-        int path = 1;
-        for (int d = 0; d < 4; d++) {
-            int a = i + delta[d], b = j + delta[d + 1];
-            if (a >= 0 && a < m.length && b >= 0 && b < m[0].length && m[i][j] > m[a][b])
-                path = Math.max(path, 1 + visit(m, a, b, cache, delta));
-        }
-        cache[i][j] = path;
-        return path;
+    public int[] intersection(int[] nums1, int[] nums2) {
+       Set<Integer> s1 = new HashSet<>(), s2 = new HashSet<>();
+        for (int n : nums1)
+            s1.add(n);
+        for (int n : nums2)
+            if(s1.contains(n))
+                s2.add(n);
+        int r[] = new int[s2.size()], i = 0;
+        for (Integer n : s2)
+            r[i++] = n;
+        return r;
     }
 }
