@@ -1,14 +1,23 @@
 package spiral_matrix;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Solution {
-    public int minDistance(String word1, String word2) {
-        int[][] dp = new int[word1.length() + 1][word2.length() + 1];
-        for (int i = 0; i < word1.length(); i++) {
-            char c = word1.charAt(i);
-            for (int j = 0; j < word2.length(); j++)
-                if (c == word2.charAt(j))
-                    dp[i + 1][j + 1] = 1 + dp[i][j];
-                else dp[i + 1][j + 1] = Math.max(dp[i][j + 1], dp[i + 1][j]);
+    public List<Integer> spiralOrder(int[][] m) {
+        if (m.length == 0) return new ArrayList<>();
+        List<Integer> r = new ArrayList<>(m.length * m[0].length);
+        int lo = 0, hi = m.length - 1, left = -1, right = m[0].length - 1;
+        while (lo <= hi && ++left <= right) {
+            for (int i = left; i <= right; i++)
+                r.add(m[lo][i]);
+            for (int i = ++lo; i <= hi; i++)
+                r.add(m[i][right]);
+            if (lo > hi || left > --right) break;
+            for (int i = right; i >= left; i--)
+                r.add(m[hi][i]);
+            for (int i = --hi; i >= lo; i--)
+                r.add(m[i][left]);
         }
-        return word1.length() + word2.length() - 2*dp[word1.length()][word2.length()];
+        return r;
     }
 }
