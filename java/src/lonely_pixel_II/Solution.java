@@ -1,4 +1,4 @@
-package lonely_pixel;
+package lonely_pixel_II;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
