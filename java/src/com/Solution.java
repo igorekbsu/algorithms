@@ -1,71 +1,88 @@
 package com;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 public class Solution {
+
+    Map<String, Double> cache = new HashMap<>();
+
+    public double largestSumOfAverages(int[] A, int K) {
+        return largest(A, K, 0);
+    }
+
+    double largest(int[] a, int k, int start) {
+        String key = start + "-" + k;
+        if (cache.containsKey(key))
+            return cache.get(key);
+        if (k == 1) {
+            double sum = 0, len = 0;
+            for (int i = start; i < a.length; i++, len++)
+                sum += a[i];
+            if (len == 0) return 0;
+            return sum / len;
+        }
+        int sum = 0;
+        double largest = 0, len = 1;
+        for (int i = start; i < a.length; i++, len++) {
+            sum += a[i];
+            largest = Math.max(largest, sum / len + largest(a, k - 1, i + 1));
+        }
+        cache.put(key, largest);
+        return largest;
+    }
+
     public static void main(String[] args) {
+        int[][] routes = {{7, 12}, {4, 5, 15}, {6}, {15, 19}, {9, 12, 13}};
+        System.out.println(new Solution().numBusesToDestination(routes, 15, 12));
     }
 
-    public int[] numberOfLines(int[] widths, String S) {
-        int lines = 0, currWidth = 0;
-        for (char c : S.toCharArray()) {
-            currWidth += widths[c - 'a'];
-            if (currWidth == 100) {
-                lines++;
-                currWidth = 0;
-            } else if (currWidth > 100) {
-                lines++;
-                currWidth = widths[c - 'a'];
-            }
+    public int numBusesToDestination(int[][] routes, int s, int t) {
+        List<Set<Integer>> graph = new ArrayList<>(routes.length);
+        List<Integer> startBuses = new LinkedList<>();
+        for (int i = 0; i < routes.length; i++) {
+            Set<Integer> stops = new HashSet<>();
+            for (int stop : routes[i])
+                stops.add(stop);
+            graph.add(stops);
+            if (stops.contains(s))
+                startBuses.add(i);
         }
-        return new int[]{lines + 1, currWidth};
-    }
-
-    public int uniqueMorseRepresentations(String[] words) {
-        String[] morse = {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-",
-            "-.--", "--.."};
-        Set<String> s = new HashSet<>();
-        for (String word : words) {
-            StringBuilder b = new StringBuilder();
-            for (char c : word.toCharArray())
-                b.append(morse[c - 'a']);
-            s.add(b.toString());
-        }
-        return s.size();
-    }
-
-    public int maxIncreaseKeepingSkyline(int[][] grid) {
-        int[] top = new int[grid.length], left = new int[grid.length];
-        for (int i = 0; i < grid.length; i++) {
-            left[i] = grid[i][0];
-            top[i] = grid[0][i];
-            for (int j = 1; j < grid.length; j++) {
-                left[i] = Math.max(left[i], grid[i][j]);
-                top[i] = Math.max(top[i], grid[j][i]);
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < startBuses.size(); i++) {
+            Set<Integer> used = new HashSet<>();
+            used.add(i);
+            Queue<Integer> q = new LinkedList<>();
+            q.add(i);
+            int n = 1;
+            boolean done = false;
+            while (!q.isEmpty()) {
+                for (int size = q.size(); size > 0; size--) {
+                    Integer bus = q.poll();
+                    Set<Integer> stops = graph.get(bus);
+                    if (stops.contains(t)) {
+                        done = true;
+                        break;
+                    }
+                    for (int j = 0; j < graph.size(); j++)
+                        if (!used.contains(j))
+                            for (Integer stop : stops)
+                                if (graph.get(j).contains(stop)) {
+                                    q.add(j);
+                                    used.add(j);
+                                }
+                }
+                if (done) break;
+                n++;
             }
+            if (done)
+                min = Math.min(min, n);
         }
-        int max = 0;
-        for (int i = 0; i < grid.length; i++)
-            for (int j = 0; j < grid.length; j++) {
-                max += Math.min(left[i], top[j]) - grid[i][j];
-            }
-        return max;
+        return min == Integer.MAX_VALUE ? -1 : min;
     }
-
-    public boolean splitArraySameAverage(int[] A) {
-        double sum = 0;
-        for (int n : A)
-            sum += n;
-        double avr = sum / A.length;
-        Arrays.sort(A);
-        return split(A, 0, A.length - 1, avr, 0);
-    }
-
-    boolean split(int[] a, int left, int right, double avr, double sum) {
-        if(sum == avr)return true;
-        
-        return false;
-    }
-
 }
