@@ -1,11 +1,5 @@
 package rearrange_str_k_distance_apart;
 public class Solution {
-    public static void main(String[] args) {
-        System.out.println(new Solution().rearrangeString("aaadbbcc", 2));
-        System.out.println(new Solution().rearrangeString("aaadbbcc", 3));
-        System.out.println(new Solution().rearrangeString("aaabc", 3));
-    }
-
     public String rearrangeString(String s, int k) {
         int[] count = new int[26], valid = new int[26];
         for (char c : s.toCharArray())

@@ -1,5 +1,5 @@
-package ugly_number;
-public class Solution2 {
+package ugly_number_II;
+public class Solution {
     public int nthUglyNumber(int n) {
         int dp[] = new int[n], i2 = 0, i3 = 0, i5 = 0;
         dp[0] = 1;

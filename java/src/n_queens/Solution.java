@@ -6,7 +6,12 @@ import java.util.List;
 
 public class Solution {
     public static void main(String[] args) {
-        System.out.println(new Solution().solveNQueens(4));
+        List<List<String>> r = new Solution().solveNQueens(4);
+        for (List<String> board : r) {
+            System.out.println("==========");
+            for (String s : board)
+                System.out.println(s);
+        }
     }
 
     public List<List<String>> solveNQueens(int n) {
@@ -19,9 +24,9 @@ public class Solution {
     }
 
     void solve(char[][] b, int row, List<List<String>> r) {
-        if (b.length == row) {
+        if (b.length == row)
             r.add(str(b));
-        } else for (int col = 0; col < b.length; col++)
+        else for (int col = 0; col < b.length; col++)
             if (valid(b, row, col)) {
                 b[row][col] = 'Q';
                 solve(b, row + 1, r);
@@ -30,22 +35,22 @@ public class Solution {
     }
 
     boolean valid(char[][] b, int row, int col) {
-        for (int r = 0; r < row; r++)
-            if (b[r][col] == 'Q')
+        for(int r = 0; r < row; r++)
+            if(b[r][col] == 'Q')
                 return false;
-        for (int r = row - 1, c = col - 1; r >= 0 && c >= 0; r--, c--)
-            if (b[r][c] == 'Q')
+        for(int c = col - 1, r = row - 1; c>=0 && r>=0; c--, r--)
+            if(b[r][c] == 'Q')
                 return false;
-        for (int r = row - 1, c = col + 1; r >= 0 && c < b.length; r--, c++)
-            if (b[r][c] == 'Q')
+        for(int c = col + 1, r = row - 1; c < b.length && r>=0; r--, c++)
+            if(b[r][c] == 'Q')
                 return false;
         return true;
     }
 
     List<String> str(char[][] b) {
         List<String> r = new ArrayList<>(b.length);
-        for (char[] s : b)
-            r.add(new String(s));
+        for (char[] row : b)
+            r.add(new String(row));
         return r;
     }
 }

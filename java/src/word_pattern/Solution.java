@@ -1,23 +1,26 @@
 package word_pattern;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Solution {
-    public boolean wordPattern(String pattern, String str) {
-        if (str == null || pattern == null) return false;
-        Map<Character, String> map = new HashMap<>();
-        String[] split = str.split(" ");
-        if (split.length != pattern.length()) return false;
-        for (int i = 0; i < split.length; i++) {
-            char c = pattern.charAt(i);
-            if (map.containsKey(c)) {
-                if (!map.get(c).equals(split[i]))
+    public static void main(String[] args) {
+        System.out.println(new Solution().wordPattern("abba", "dog cat cat dog"));
+    }
+
+    public boolean wordPattern(String p, String str) {
+        String[] words = str.split(" ");
+        if (p.length() != words.length) return false;
+        Map<String, Character> m = new HashMap<>();
+        Set<Character> used = new HashSet<>();
+        for (int i = 0; i < words.length; i++) {
+            char c = p.charAt(i);
+            if (used.add(c)) {
+                if (m.put(words[i], c) != null)
                     return false;
-            } else {
-                if (map.containsValue(split[i]))
-                    return false;
-                map.put(c, split[i]);
-            }
+            } else if (m.getOrDefault(words[i], ' ') != c)
+                return false;
         }
         return true;
     }

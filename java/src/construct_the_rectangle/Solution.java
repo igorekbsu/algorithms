@@ -1,6 +1,8 @@
 package construct_the_rectangle;
 public class Solution {
     public int[] constructRectangle(int area) {
-      return null;
+        int w = (int) Math.sqrt(area);
+        for (; area % w != 0; w--) ;
+        return new int[]{area / w, w};
     }
 }
