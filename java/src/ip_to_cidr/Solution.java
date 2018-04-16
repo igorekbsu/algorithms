@@ -3,37 +3,40 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Solution {
-  public static void main(String[] args) {
-    System.out.println(new Solution().ipToCIDR("255.0.0.8", 20));
-  }
-
-  public List<String> ipToCIDR(String IP, int range) {
-    long x = 0;
-    String[] parts = IP.split("\\.");
-    for (String part : parts)
-      x = Integer.parseInt(part) + x * 256;
-    List<String> r = new LinkedList<>();
-    while (range > 0) {
-      int step = (int) (x & -x);
-      while (step > range) step /= 2;
-      r.add(longToIP(x, step));
-      x += step;
-      range -= step;
+    public static void main(String[] args) {
+        System.out.println(new Solution().ipToCIDR("255.0.0.7", 10));
     }
-    return r;
-  }
 
-  String longToIP(long x, int step) {
-    int[] r = new int[4];
-    r[0] = (int) (x & 255); x >>= 8;
-    r[1] = (int) (x & 255); x >>= 8;
-    r[2] = (int) (x & 255); x >>= 8;
-    r[3] = (int) x;
-    int len = 33;
-    while (step > 0) {
-      len--;
-      step /= 2;
+    public List<String> ipToCIDR(String ip, int n) {
+        long s = ipToLong(ip);
+        List<String> r = new LinkedList<>();
+        while (n > 0) {
+            int mask = 33 - Math.min(bitLen(s & -s), bitLen(n));
+            r.add(toIp(s) + "/" + mask);
+            n -= 1 << (32 - mask);
+            s += 1 << (32 - mask);
+        }
+        return r;
     }
-    return r[3] + "." + r[2] + "." + r[1] + "." + r[0] + "/" + len;
-  }
+
+    int bitLen(long n) {
+        if (n == 0) return 1;
+        int len = 0;
+        while (n > 0) {
+            n >>= 1;
+            len++;
+        }
+        return len;
+    }
+
+    String toIp(long n) {
+        return String.format("%s.%s.%s.%s", n >> 24, (n >> 16) % 256, (n >> 8) % 256, n % 256);
+    }
+
+    long ipToLong(String ip) {
+        long r = 0;
+        for (String part : ip.split("\\."))
+            r = 256 * r + Integer.parseInt(part);
+        return r;
+    }
 }
