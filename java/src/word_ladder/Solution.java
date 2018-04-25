@@ -13,31 +13,28 @@ public class Solution {
     }
 
     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        Set<String> wordsSet = new HashSet<>(wordList);
-        if (!wordsSet.contains(endWord)) return 0;
+        Set<String> words = new HashSet<>(wordList);
+        if (!words.contains(endWord)) return 0;
         Queue<String> q = new LinkedList<>();
         q.add(beginWord);
-        int d = 2;
+        words.remove(beginWord);
+        int d = 1;
         while (!q.isEmpty()) {
-            int size = q.size();
-            for (int t = 0; t < size; t++) {
-                String word = q.poll();
-                char[] chars = word.toCharArray();
-                for (int i = 0; i < word.length(); i++) {
-                    char old = chars[i];
+            d++;
+            for (int size = q.size(); size > 0; size--) {
+                char[] word = q.poll().toCharArray();
+                for (int i = 0; i < word.length; i++) {
+                    char old = word[i];
                     for (char c = 'a'; c <= 'z'; c++) {
-                        chars[i] = c;
-                        String nextWord = String.valueOf(chars);
-                        if (nextWord.equals(endWord)) return d;
-                        else if (wordsSet.contains(nextWord)) {
-                            wordsSet.remove(nextWord);
-                            q.add(nextWord);
-                        }
+                        word[i] = c;
+                        String next = new String(word);
+                        if (next.equals(endWord)) return d;
+                        if (words.remove(next))
+                            q.add(next);
                     }
-                    chars[i] = old;
+                    word[i] = old;
                 }
             }
-            d++;
         }
         return 0;
     }

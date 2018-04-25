@@ -2,13 +2,10 @@ package longest_common_prefix;
 public class Solution {
     public String longestCommonPrefix(String[] strs) {
         if (strs.length == 0) return "";
-        String first = strs[0], pre = "";
-        for (int i = 1; i <= first.length(); i++) {
-            pre = first.substring(0, i);
-            for (String str : strs)
-                if (!str.startsWith(pre))
-                    return first.substring(0, i - 1);
-        }
-        return pre;
+        for (int i = 0; i < strs[0].length(); i++)
+            for (int j = 1; j < strs.length; j++)
+                if (i >= strs[j].length() || strs[j].charAt(i) != strs[0].charAt(i))
+                    return strs[0].substring(0, i);
+        return strs[0];
     }
 }
