@@ -5,10 +5,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Solution {
-    public static void main(String[] args) {
-        System.out.println(new Solution().subdomainVisits(new String[]{"900 google.mail.com", "50 yahoo.com", "1 intel.mail.com", "5 wiki.org"}));
-    }
-
     public List<String> subdomainVisits(String[] domains) {
         Map<String, Integer> counts = new HashMap<>();
         for (String cd : domains) {
