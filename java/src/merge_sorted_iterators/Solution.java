@@ -22,7 +22,7 @@ public class Solution {
         final List<Iterator<Integer>> its;
         final PriorityQueue<Item> q = new PriorityQueue<>(Comparator.comparingInt(e -> e.val));
 
-        public SortedIntIterator(List<Iterator<Integer>> its) {
+        SortedIntIterator(List<Iterator<Integer>> its) {
             this.its = its;
             its.stream().filter(Iterator::hasNext).forEach(e -> q.offer(new Item(e.next(), e)));
         }
