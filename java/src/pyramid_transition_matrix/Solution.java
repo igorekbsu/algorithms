@@ -21,14 +21,13 @@ public class Solution {
         return bfs(bottom, "", m, 1);
     }
 
-    boolean bfs(String row, String nextRow, Map<String, Set<Character>> allowed, int start) {
+    boolean bfs(String row, String nextRow, Map<String, Set<Character>> allowed, int i) {
         if (row.length() == 1) return true;
         if (nextRow.length() + 1 == row.length())
             return bfs(nextRow, "", allowed, 1);
-        for (int i = start; i < row.length(); i++)
-            for (Character c : allowed.getOrDefault(row.substring(i - 1, i + 1), new HashSet<>()))
-                if (bfs(row, nextRow + c, allowed, i + 1))
-                    return true;
+        for (Character c : allowed.getOrDefault(row.substring(i - 1, i + 1), new HashSet<>()))
+            if (bfs(row, nextRow + c, allowed, i + 1))
+                return true;
         return false;
     }
 }
