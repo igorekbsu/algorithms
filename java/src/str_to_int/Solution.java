@@ -5,18 +5,17 @@ public class Solution {
     }
 
     public int myAtoi(String str) {
-        int r = 0, sign = 1, i = 0;
-        while (i < str.length() && str.charAt(i) == ' ')
+        int i = 0, sign = 1, r = 0;
+        char[] a = str.toCharArray();
+        while (i < a.length && a[i] == ' ')
             i++;
-        if (i == str.length()) return 0;
-        if (str.charAt(i) == '+' || str.charAt(i) == '-') {
-            if (str.charAt(i) == '-') sign = -1;
-            i++;
-        }
-        while (i < str.length() && Character.isDigit(str.charAt(i)))
-            if (r > Integer.MAX_VALUE / 10 || (r == Integer.MAX_VALUE / 10 && str.charAt(i) > '7'))
-                return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-            else r = 10 * r + str.charAt(i++) - '0';
-        return r * sign;
+        if (i >= a.length) return 0;
+        if (a[i] == '-' || a[i] == '+')
+            sign = a[i++] == '-' ? -1 : 1;
+        while (i < a.length && Character.isDigit(a[i]))
+            if (r > Integer.MAX_VALUE / 10 || (r == Integer.MAX_VALUE / 10 && a[i] > '7'))
+                return sign == -1 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            else r = 10 * r + a[i++] - '0';
+        return sign * r;
     }
 }

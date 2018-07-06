@@ -1,16 +1,19 @@
 package add_binary;
 public class Solution {
     public String addBinary(String a, String b) {
+        int carry = 0, i = a.length() - 1, j = b.length() - 1;
         StringBuilder r = new StringBuilder();
-        int carry = 0;
-        for (int i = a.length() - 1, j = b.length() - 1; i >= 0 || j >= 0; i--, j--) {
-            int c = carry;
-            if (i >= 0) c += a.charAt(i) - '0';
-            if (j >= 0) c += b.charAt(j) - '0';
-            carry = c / 2;
-            r.append(c % 2);
+        while (i >= 0 || j >= 0) {
+            int sum = carry;
+            if (i >= 0)
+                sum += a.charAt(i--) - '0';
+            if (j >= 0)
+                sum += b.charAt(j--) - '0';
+            r.append(sum % 2);
+            carry = sum / 2;
         }
-        if (carry > 0) r.append(carry);
+        if(carry > 0)
+            r.append(carry);
         return r.reverse().toString();
     }
 }
