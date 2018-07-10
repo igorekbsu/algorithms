@@ -29,6 +29,8 @@ public class Nu {
         public TreeNode left, right;
 
         public TreeNode(int x) { val = x; }
+
+        @Override public String toString() {return Integer.toString(val);}
     }
 
     public static class ListNode {
