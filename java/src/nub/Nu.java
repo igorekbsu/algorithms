@@ -78,4 +78,14 @@ public class Nu {
             System.out.println();
         }
     }
+
+    public static class Point {
+        public int x, y;
+
+        Point() { x = 0; y = 0; }
+
+        Point(int a, int b) { x = a; y = b; }
+
+        @Override public String toString() {return x + "," + y;}
+    }
 }

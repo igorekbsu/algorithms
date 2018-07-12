@@ -1,30 +1,49 @@
 package race_car;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class Solution {
+    public static void main(String[] args) {
+        System.out.println(-12%10);
+    }
+
     public int racecar(int target) {
-        if (target == 0) return 0;
-        Queue<int[]> q = new LinkedList<>();
-        q.add(new int[]{0, 1});
-        Set<String> used = new HashSet<>();
-        used.add(0 + "-" + 1);
-        int count = 0;
-        while (!q.isEmpty()) {
-            count++;
-            for (int size = q.size(); size > 0; size--) {
-                int[] i = q.poll();
-                int p1 = i[0] + i[1], s1 = i[1] * 2;
-                if (p1 == target) return count;
-                int p2 = i[0], s2 = i[1] > 0 ? -1 : 1;
-                q.add(new int[]{p1, s1});
-                String key = p2 + "-" + s2;
-                if (used.add(key))
-                    q.add(new int[]{p2, s2});
+        int K = 33 - Integer.numberOfLeadingZeros(target - 1), limit = 1 << K;
+        int[] dp = new int[2 * limit + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[target] = 0;
+        PriorityQueue<Node> pq = new PriorityQueue<>(new Comparator<Node>() {
+            @Override public int compare(Node o1, Node o2) {
+                return o1.steps - o2.steps;
+            }
+        });
+        pq.offer(new Node(0, target));
+        while (!pq.isEmpty()) {
+            Node node = pq.poll();
+            int steps = node.steps, target1 = node.target;
+            if (dp[target1 % dp.length] > steps) continue;
+            for (int k = 0; k <= K; ++k) {
+                int walk = (1 << k) - 1;
+                int target2 = walk - target1;
+                int steps2 = steps + k + (target2 != 0 ? 1 : 0);
+                if (Math.abs(target2) <= limit && steps2 < dp[target2 % dp.length]) {
+                    pq.offer(new Node(steps2, target2));
+                    dp[Math.floorMod(target2, dp.length)] = steps2;
+                }
             }
         }
-        return -1;
+
+        return dp[0];
     }
+
+    class Node {
+        int steps, target;
+
+        Node(int s, int t) {
+            steps = s;
+            target = t;
+        }
+    }
+
 }
