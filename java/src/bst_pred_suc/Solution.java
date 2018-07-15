@@ -2,10 +2,10 @@ package bst_pred_suc;
 /**
  * Definition for a binary tree node.
  * public class TreeNode {
- *     int val;
+ *     input val;
  *     TreeNode left;
  *     TreeNode right;
- *     TreeNode(int x) { val = x; }
+ *     TreeNode(input x) { val = x; }
  * }
  */
 public class Solution {

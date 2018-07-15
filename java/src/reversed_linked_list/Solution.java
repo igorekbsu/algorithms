@@ -2,9 +2,9 @@ package reversed_linked_list;
 /**
  * Definition for singly-linked list.
  * public class ListNode {
- *     int val;
+ *     input val;
  *     ListNode next;
- *     ListNode(int x) { val = x; }
+ *     ListNode(input x) { val = x; }
  * }
  */
 public class Solution {

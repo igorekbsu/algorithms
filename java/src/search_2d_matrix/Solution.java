@@ -3,7 +3,7 @@ import java.util.Arrays;
 
 public class Solution {
     public static void main(String[] args) {
-//        int[][] m = {
+//        input[][] m = {
 //                {1, 4, 7, 11, 15},
 //                {2, 5, 8, 12, 19},
 //                {3, 6, 9, 16, 22},

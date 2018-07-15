@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class Solution {
     public static void main(String[] args) {
-//        int[][] recs = {
+//        input[][] recs = {
 //            {0, 0, 2, 2},
 //            {1, 0, 2, 3},
 //            {1, 0, 3, 1}

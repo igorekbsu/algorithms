@@ -9,7 +9,7 @@ public class Solution {
                 {0, 0, 0, 0, 0},
                 {0, 0, 1, 0, 0}
         };
-//        int[][] grid = {
+//        input[][] grid = {
 //                {1, 0},
 //                {0, 0}
 //        };

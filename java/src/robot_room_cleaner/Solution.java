@@ -18,9 +18,9 @@ class Solution {
 
     public void cleanRoom(Robot robot) { clean(robot, new HashSet<>(), 0, 0, 0);}
 
-    void clean(Robot robot, Set<String> set, int row, int col, int dir) {
-        String position = row + "->" + col;
-        if (!set.add(position)) return;
+    void clean(Robot robot, Set<String> seen, int row, int col, int dir) {
+        String position = row + ":" + col;
+        if (!seen.add(position)) return;
         robot.clean();
         for (int n = 0; n < 4; n++) {
             if (robot.move()) {
@@ -32,7 +32,7 @@ class Solution {
                 else if (dir == 2)
                     r += 1;
                 else c -= 1;
-                clean(robot, set, r, c, dir);
+                clean(robot, seen, r, c, dir);
                 robot.turnLeft(); robot.turnLeft();
                 robot.move();
                 robot.turnRight(); robot.turnRight();
