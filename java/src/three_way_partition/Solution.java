@@ -8,19 +8,14 @@ public class Solution {
         System.out.println(Arrays.toString(a));
     }
 
-    void sort(int[] a, int med) {
-        int lo = 0, c = 0, hi = a.length - 1;
-        while (c < hi) {
-            if (a[c] < med) {
-                swap(a, lo, c);
-                lo++; c++;
-            } else if (a[c] > med) {
-                swap(a, c, hi);
-                hi--;
-            } else {
-                c++;
-            }
-        }
+    void sort(int[] a, int mid) {
+        int lo = 0, m = 0, hi = a.length - 1;
+        while (m < hi)
+            if (a[m] < mid)
+                swap(a, lo++, m++);
+            else if (a[m] > mid)
+                swap(a, m, hi--);
+            else m++;
     }
 
     void swap(int[] a, int i, int j) {

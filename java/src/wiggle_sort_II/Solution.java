@@ -7,13 +7,14 @@ public class Solution {
         new Solution().wiggleSort(a);
         System.out.println(Arrays.toString(a));
     }
+
     public void wiggleSort(int[] a) {
-        Arrays.sort(a);
-        int m = a.length / 2;
-        for (int i = 1, j = m; j < a.length; i += 2, j += 2) {
-            int t = a[i];
-            a[i] = a[j];
-            a[j] = t;
-        }
+        int n = a.length, m = (n + 1) >> 1;
+        int[] copy = Arrays.copyOf(a, n);
+        Arrays.sort(copy);
+        for (int i = m - 1, j = 0; i >= 0; i--, j += 2)
+            a[j] = copy[i];
+        for (int i = n - 1, j = 1; i >= m; i--, j += 2)
+            a[j] = copy[i];
     }
 }
