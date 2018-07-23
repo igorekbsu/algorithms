@@ -13,9 +13,10 @@ public class Solution {
             "a:c:2",
             "b:c:3"
         );
+        System.out.println(new Solution().rates("a", "c", tickers));
     }
 
-    public List<Double> rates(String a, String b, List<String> tickers) {
+    public double rates(String a, String b, List<String> tickers) {
         Map<String, Map<String, Double>> m = new HashMap<>();
         for (String t : tickers) {
             String[] s = t.split(":");
@@ -25,12 +26,17 @@ public class Solution {
             m.get(s[1]).put(s[0], 1 / Double.parseDouble(s[2]));
         }
         List<Double> rates = new LinkedList<>();
-        dfs(a, b, m, new HashSet<>(), rates);
-        return rates;
+        dfs(a, b, 1, m, new HashSet<>(), rates);
+        return rates.stream().mapToDouble(e -> e).max().getAsDouble();
 
     }
 
-    void dfs(String a, String b, Map<String, Map<String, Double>> m, HashSet<String> seen, List<Double> r) {
-        
+    void dfs(String a, String b, double rate, Map<String, Map<String, Double>> m, HashSet<String> seen, List<Double> result) {
+        if (a.equals(b))
+            result.add(rate);
+        if (!seen.add(a) || !m.containsKey(a)) return;
+        Map<String, Double> next = m.get(a);
+        for (String s : next.keySet())
+            dfs(s, b, rate * next.get(s), m, seen, result);
     }
 }
