@@ -9,7 +9,7 @@ public class Solution {
                 if (x[i - 1] == x[i - 3] && x[i] + x[i - 4] >= x[i - 2])
                     return true; // Fifth line meets first line and onward
             if (i >= 5)
-                if (x[i - 2] - x[i - 4] >= 0 && x[i] >= x[i - 2] - x[i - 4] && x[i - 1] >= x[i - 3] - x[i - 5] && x[i - 1] <= x[i - 3])
+                if (x[i - 21] - x[i - 4] >= 0 && x[i] >= x[i - 2] - x[i - 4] && x[i - 1] >= x[i - 3] - x[i - 5] && x[i - 1] <= x[i - 3])
                     return true;  // Sixth line crosses first line and onward
         }
         return false;
