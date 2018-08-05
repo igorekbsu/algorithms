@@ -1,17 +1,37 @@
 package lowest_common_ancestor_bst;
-import nub.Nu.TreeNode;
-
 public class Solution {
-    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        if (p.val > q.val)
-            return lowestCommonAncestor(root, q, p);
-        while (root.val != p.val || root.val != q.val) {
-            if (root.val > p.val && root.val < q.val)
-                return root;
-            if (root.val <= p.val)
-                root = root.right;
-            else root = root.left;
+    class Trie {
+        Node trie = new Node();
+
+        public void insert(String word) {
+            Node node = trie;
+            for (char c : word.toCharArray()) {
+                if (node.nodes[c - 'a'] == null)
+                    node.nodes[c - 'a'] = new Node();
+                node = node.nodes[c - 'a'];
+            }
+            node.word = true;
         }
-        return root;
+
+        public boolean search(String word) {
+            Node node = find(word);
+            return node != null && node.word;
+        }
+
+        public boolean startsWith(String prefix) { return find(prefix) != null;}
+
+        public Node find(String pre) {
+            Node node = trie;
+            for (char c : pre.toCharArray()) {
+                node = node.nodes[c - 'a'];
+                if (node == null) return null;
+            }
+            return node;
+        }
+
+        class Node {
+            final Node[] nodes = new Node[26];
+            boolean word;
+        }
     }
 }

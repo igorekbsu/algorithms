@@ -1,25 +1,20 @@
 package exclusive_time_of_functions;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
+import read_n_chars_given_read4.Reader4;
 
-public class Solution {
-    public int[] exclusiveTime(int n, List<String> logs) {
-        Deque<Integer> s = new ArrayDeque<>();
-        int[] time = new int[n];
-        for (int prevTime = 0, i = 0; i < logs.size(); i++) {
-            String[] parts = logs.get(i).split(":");
-            int currTime = Integer.parseInt(parts[2]);
-            if (!s.isEmpty())
-                time[s.peek()] += currTime - prevTime;
-            if (parts[1].equals("start"))
-                s.push(Integer.parseInt(parts[0]));
-            else {
-                time[s.pop()]++;
-                currTime++;
-            }
-            prevTime = currTime;
+public class Solution extends Reader4 {
+    char[] tmpBuf = new char[4];
+    int len, i;
+
+    public int read(char[] buf, int n) {
+        int j = 0;
+        while (j < n) {
+            if (i == 0)
+                len = read4(tmpBuf);
+            if (len == 0) break;
+            for (; i < len && j < n; i++, j++)
+                buf[j] = tmpBuf[i];
+            i = i == len ? 0 : i;
         }
-        return time;
+        return j;
     }
 }
