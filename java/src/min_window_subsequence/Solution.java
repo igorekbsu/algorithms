@@ -1,30 +1,24 @@
 package min_window_subsequence;
 public class Solution {
     public static void main(String[] args) {
-        System.out.println(new Solution().minWindow("abcdebdde", "bde"));
+        System.out.println(new Solution().minWindow("cabd", "ab"));
     }
-    public String minWindow(String S, String T) {
-        int m = T.length(), n = S.length(), dp[][] = new int[m + 1][n + 1];
-        for (int j = 0; j <= n; j++)
-            dp[0][j] = j + 1;
-        for (int i = 1; i <= m; i++) {
-            for (int j = 1; j <= n; j++) {
-                if (T.charAt(i - 1) == S.charAt(j - 1)) {
+
+    public String minWindow(String s, String t) {
+        int[][] dp = new int[t.length() + 1][s.length() + 1];
+        for (int i = 0; i <= s.length(); i++)
+            dp[0][i] = i + 1;
+        for (int i = 1; i <= t.length(); i++)
+            for (int j = 1; j <= s.length(); j++)
+                if (t.charAt(i - 1) == s.charAt(j - 1))
                     dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    dp[i][j] = dp[i][j - 1];
-                }
+                else dp[i][j] = dp[i][j - 1];
+        int start = 0, len = s.length() + 1, n = t.length();
+        for(int i = 0; i <= s.length(); i++)
+            if(dp[n][i] != 0 && i - dp[n][i] + 1 < len){
+                start = dp[n][i] - 1;
+                len = i - dp[n][i] + 1;
             }
-        }
-        int start = 0, len = n + 1;
-        for (int j = 1; j <= n; j++) {
-            if (dp[m][j] != 0) {
-                if (j - dp[m][j] + 1 < len) {
-                    start = dp[m][j] - 1;
-                    len = j - dp[m][j] + 1;
-                }
-            }
-        }
-        return len == n + 1 ? "" : S.substring(start, start + len);
+        return len > s.length()? "": s.substring(start, start + len);
     }
 }
