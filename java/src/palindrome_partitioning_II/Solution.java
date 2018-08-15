@@ -1,30 +1,26 @@
 package palindrome_partitioning_II;
-import java.util.HashMap;
-import java.util.Map;
-
 public class Solution {
     public static void main(String[] args) {
         System.out.println(new Solution().minCut("aab"));
     }
 
-    Map<String, Integer> dp = new HashMap<>();
-
     public int minCut(String s) {
-        if (dp.containsKey(s))
-            return dp.get(s);
-        if (pal(s))
-            return 0;
-        int minCut = Integer.MAX_VALUE;
-        for (int i = 1; i < s.length(); i++)
-            minCut = Math.min(minCut, 1 + minCut(s.substring(0, i)) + minCut(s.substring(i)));
-        dp.put(s, minCut);
-        return minCut;
+        char[] a = s.toCharArray();
+        int[] dp = new int[a.length + 1];
+        dp[0] = -1;
+        for (int i = 0; i < a.length; i++)
+            dp[i + 1] = i;
+        for (int i = 0; i < a.length; i++) {
+            expand(a, i, i + 1, dp);
+            expand(a, i, i, dp);
+        }
+        return dp[a.length];
     }
 
-    boolean pal(String s) {
-        for (int lo = 0, hi = s.length() - 1; lo < hi; lo++, hi--)
-            if (s.charAt(lo) != s.charAt(hi))
-                return false;
-        return true;
+    void expand(char[] a, int lo, int hi, int[] dp) {
+        while (lo >= 0 && hi < a.length && a[lo] == a[hi]) {
+            dp[hi + 1] = Math.min(dp[hi + 1], dp[lo] + 1);
+            lo--; hi++;
+        }
     }
 }
