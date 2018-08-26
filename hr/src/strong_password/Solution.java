@@ -21,6 +21,6 @@ public class Solution {
                 A = 0;
             else if (s.contains(c))
                 special = 0;
-        return Math.max(d + a + A + special, 6 - pass.length());
+        return Math.max(d + a + A + special, 6 - pass.length());                                                                
     }
 }
