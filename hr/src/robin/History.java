@@ -55,13 +55,16 @@ public class History {
                 throw e;
             }
         }
-        int traded = 0;
+        int traded = 0, gains = 0;
         for (String incName : companies) {
             int amount = amounts.get(incName), nShares = shares.get(incName);
             traded += amount;
-            System.out.println(String.format("%s %s", incName, nShares));
+            System.out.println(String.format("%s %s %s", incName, nShares, amount));
+            if(nShares == 0)
+                gains+=-amount;
         }
         System.out.println(money(cash));
         System.out.println(money(traded));
+        System.out.println(money(gains));
     }
 }
