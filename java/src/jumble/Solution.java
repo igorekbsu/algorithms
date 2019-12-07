@@ -8,7 +8,7 @@ import java.util.Set;
 public class Solution {
     public static void main(String[] args) throws IOException {
         Set<String> dict = new HashSet<>(Files.readAllLines(Paths.get("/usr/share/dict/american-english")));
-        Set<String> words = solve("trufho");
+        Set<String> words = solve("rsbpeu");
         for (String w : words)
             if (dict.contains(w))
                 System.out.println(w);
